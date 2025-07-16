@@ -1,6 +1,12 @@
 package com.company.membership.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Member {
+    private Long id;
     private String memberType;         // 회원 유형 (WU: 통합회원, R: Rewards, W: Web)
     private String integrationType;    // 통합 유형 (UU: 통합대상, T: 전환대상, N: 미대상)
     private Integer webInfoId;         // 웹 회원 전용 시퀀스 아이디
@@ -19,6 +25,4 @@ public class Member {
     private String memberJoinDate;     // 가입일 (YYYYMMDD)
     private String employeeStatus;     // 임직원여부 (Y/N)
     private String password;           // 비밀번호
-
-    // getter/setter 생략 (필요시 추가)
 } 
