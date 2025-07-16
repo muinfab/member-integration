@@ -1,0 +1,1008 @@
+```
+## API 명세: 로그인 (IDMI-REWARDS-001)
+
+---
+### 1. 개요
+이 API는 일반 및 간편 회원 로그인을 처리합니다.
+
+### 2. URI
+`/v1/membership/integration/login`
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **loginType** | 로그인 유형 | int | | Y | 00 | 00: 일반 로그인, 1: 간편 로그인 |
+| **loginId** | 로그인 아이디 | string | | | userid | 일반 로그인 시 아이디 (평문) |
+| **loginPw** | 로그인 패스워드 | string | | | password123 | 일반 로그인 시 패스워드 (평문) |
+| **channelId** | 카카오 아이디 | string | | | 43252323 | 간편 로그인 시 카카오 아이디 |
+| **memberCi** | Ci 정보 | string | | | ySiSkQvaSj0ifo3ytt760s38dAHMxxxk0xF8Ga7enBhRfsw5q+/HP8qc+rqo5Q8T/Km3WVo1LJ/BZUXAyi013A== | 간편 로그인 시 카카오에서 발행한 Ci 값 |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | | |
+| **memberType** | 회원 유형 | string | | Y | WU | WU: 통합회원, R: Rewards, W: Web |
+| **integrationType** | 통합 유형 | string | | Y | UU | UU: 통합대상, T: 전환대상, N: 미대상 |
+| **webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원에게만 존재 |
+| **rewardsMembershipNo** | 리워즈 멤버십 No | string | | | PM00004020 | |
+| **rewardsMembershipId** | 리워즈 ID | string | | | test001 | |
+| **loginId** | 통합 아이디 / 웹회원 아이디 | string | | Y | axlrose | 통합이 아닌 경우 웹회원 아이디 |
+| **webMemberId** | 웹회원 아이디 | string | | | test@gmail.com | |
+| **cmsProfileId** | CMS 프로필 아이디 | string | | | 1231231 | 통합회원/Web만 해당 (GUEST_NO) |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
+| **memberLastName** | 영문 성 | string | | | Hong | |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberGender** | 성별 | int | | Y | 00 | 00: 남성, 1: 여성, 2: 기타 |
+| **memberBirth** | 생년월일 | string | | Y | 19990101 | YYYYMMDD 형식 |
+| **employeeStatus** | 임직원여부 | string | | Y | N | |
+```
+
+
+```
+## API 명세: 회원 통합 (IDMI-REWARDS-002)
+
+---
+### 1. 개요
+이 API는 회원을 통합 등록하는 기능을 제공합니다.
+
+### 2. URI
+`/v1/membership/integration/register`
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **rewardsMembershipId** | 멤버십 아이디 | string | | Y | axlrose | |
+| **webMemberId** | 웹회원 아이디 | string | | Y | test@gmail.com | |
+| **unifiedId** | 통합 아이디 | string | | Y | axlrose | |
+| **unifiedPw** | 통합 비밀번호 | string | | Y | password123 | |
+| **termInfos** | 약관 내역 | list | | | | |
+| **termInfoId** | 약관 유형 아이디 | string | | Y | T001 | |
+| **agreeYn** | 동의 여부 | string | | Y | Y | |
+| **termItemInfoId** | 약관 세부 아이디 | int | | | 10 | |
+| **version** | 약관 버전 | int | | | 4 | |
+| **receiveTypes** | 수신방법 종류 | array | | | "MO", "EM", "PU" | |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | | |
+| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원, R: Rewards, W: Web |
+| **rewardsMembershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **loginId** | 통합 아이디 | string | | | axlrose | |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
+| **memberLastName** | 영문 성 | string | | | Hong | |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberGender** | 성별 | int | | | 00 | 00: 남성, 1: 여성, 2: 기타 |
+| **memberBirth** | 생년월일 | string | | | 19990101 | YYYYMMDD 형식 |
+| **employeeStatus** | 임직원여부 | string | | | N | |
+```
+
+
+```
+## API 명세: 가입 약관 조회 (IDMI-REWARDS-003)
+
+---
+### 1. 개요
+이 API는 Rewards 가입 약관을 조회하는 기능을 제공합니다.
+
+### 2. URI
+`/v1/membership/integration/terms`
+
+### 3. 메서드
+`GET`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **language** | 언어 선택 | string | | | ko | ko, en, jp, ch (jp, ch 없으면 en, en 없으면 ko) |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | | |
+| **termInfos** | 동의 약관 정보 List | list | | | | |
+| **termInfoId** | 약관 유형 아이디 | string | | Y | T001 | |
+| **termItemInfoId** | 약관 세부 아이디 | int | | | 10 | |
+| **applyDate** | 약관 적용 일자 | string | | | 20250101 | |
+| **expireDate** | 약관 만료 일자 | string | | | 99991231 | |
+| **requiredYn** | 약관 필수 여부 | string | | Y | Y | Y: 필수, N: 선택 |
+| **version** | 약관 버전 정보 | int | | | 4 | |
+| **title** | 약관 유형 명칭 | string | | | 마케팅 정보 활용 동의 | |
+| **subTitle** | 약관 세부 제목 | string | | Y | | |
+| **contents** | 약관 세부 내용 | string | | | 약관 내용입니다. | |
+| **receiveMethods** | 해당 약관 수신 방법 | array | | | "MO", "EM" | |
+```
+
+
+```
+## API 명세: 아이디 중복 체크 (IDMI-REWARDS-004)
+
+---
+### 1. 개요
+이 API는 일반 회원 가입 시 아이디 중복 여부를 확인하는 기능을 제공합니다.
+
+### 2. URI
+`/v1/membership/integration/check/id`
+
+### 3. 메서드
+`GET`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **checkInfo** | 사용할 아이디 | string | | Y | dklhioahige | |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **resultCode** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 데이터 | object | | Y | null | |
+```
+
+
+```
+## API 명세: 이메일 중복 체크 (IDMI-REWARDS-005)
+
+---
+### 1. 개요
+이 API는 회원 정보 수정 시 이메일 중복 여부를 확인하는 기능을 제공합니다.
+
+### 2. URI
+`/v1/membership/integration/check/email`
+
+### 3. 메서드
+`GET`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **checkInfo** | 이메일 | string | | Y | test@gmail.com | |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **resultCode** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 데이터 | object | | Y | null | |
+```
+
+
+```
+## API 명세: 회원 가입 (IDMI-REWARDS-006)
+
+---
+### 1. 개요
+이 API는 신규 및 전환 가입을 처리합니다.
+
+### 2. URI
+`/v1/membership/integration/join`
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 |
+|---|---|---|---|---|---|
+| **joinType** | 가입 유형 | int | | Y | 1 |
+| **joinMethod** | 가입 방법 | int | | Y | 0 |
+| **joinId** | 가입 아이디 | string | | Y | axlrose |
+| **joinPw** | 가입 패스워드 | string | | Y | password123 |
+| **channelId** | 채널 아이디 | int | | | 3670111365 |
+| **webMemberId** | 도메인 아이디 | string | | | test@gmail.com |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 |
+| **memberFirstName** | 영문 이름 | string | | | Gildong |
+| **memberMiddleName** | 영문 중간 이름 | string | | | Gildong |
+| **memberLastName** | 영문 성 | string | | | Hong |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com |
+| **memberGender** | 성별 | int | | Y | 0 |
+| **memberBirth** | 생년월일 | string | | Y | 19990101 |
+| **localYn** | 내국인/외국인 구분 | string | | Y | Y |
+| **memberCi** | CI 값 | string | | | HC0/LEp6o3TQMPSwWDW8xlO3ZI480lnZSWKPYGXMXh93EE/B3rtdaw/VT36hwXIcOmr9q/PYsrOIDHSD0gB59A== |
+| **termInfos** | 약관 내역 | list | | | |
+| **termInfoId** | 약관 유형 아이디 | string | | Y | T001 |
+| **agreeYn** | 동의 여부 | string | | Y | Y |
+| **termItemInfoId** | 약관 세부 아이디 | int | | Y | 10 |
+| **version** | 약관 버전 | int | | Y | 4 |
+| **receiveTypes** | 수신방법 종류 | array | | Y | "MO", "EM", "PU" |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 |
+|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 |
+| **message** | 메시지 | string | | Y | Success |
+| **data** | 결과 Object | object | | Y | |
+| **memberType** | 회원 유형 | string | | Y | W |
+| **membershipUserInfoId** | 회원 시퀀스 아이디 | int | | Y | 1234 |
+| **membershipNo** | 멤버십 No | string | | | PM00004020 |
+| **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 |
+| **memberFirstName** | 영문 이름 | string | | | Gildong |
+| **memberMiddleName** | 영문 중간 이름 | string | | | Heo |
+| **memberLastName** | 영문 성 | string | | | Hong |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com |
+| **memberGender** | 성별 | int | | | 0 |
+| **memberBirth** | 생년월일 | string | | | 19990101 |
+| **employeeStatus** | 임직원여부 | string | | | N |
+```
+
+
+```
+## API 명세: 회원 정보 수정 - 비밀번호 인증 (IDMI-REWARDS-007)
+
+---
+### 1. 개요
+이 API는 회원 정보 수정 시 비밀번호 인증을 처리합니다.
+
+### 2. URI
+`/v1/membership/integration/update`
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **loginId** | 로그인 아이디 | string | | Y | axlrose | |
+| **loginPw** | 로그인 패스워드 | string | | Y | $2a$10$x9Sd07/Mj0LkDRRHQs24h.2qfP0BjRi7liFeEniDJZ/g0p/1V5kJ2 | |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | | |
+| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **membershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원만 존재 |
+| **loginId** | 로그인 ID | string | | | axlrose | |
+| **webMemberId** | 웹회원 아이디 | string | | | axlrose | |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberMiddleName** | 영문 이름 | string | | | Gildong | |
+| **memberLastName** | 영문 성 | string | | | Hong | |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberGender** | 성별 | int | | | 00 | 00: 남성 / 1: 여성 / 2: 기타 |
+| **memberBirth** | 생년월일 | string | | | 19990101 | YYYYMMDD |
+| **employeeStatus** | 임직원여부 | string | | | N | |
+| **zipCode** | 우편번호 | string | | | 12535 | |
+| **address1** | 집 주소 | string | | | 서울시 강남구 논현동 | |
+| **address2** | 상세 집 주소 | string | | | 101호 | |
+| **termInfos** | 선택 약관 리스트 | list | | | | |
+| **termInfoId** | 약관 고유 아이디 | string | | | T001 | |
+| **termItemInfoId** | 약관 세부 아이디 | int | | | 10 | |
+| **version** | 약관 버전 정보 | int | | | 3 | |
+| **title** | 약관 세부 제목 | string | | | 마케팅 수신 동의 | |
+| **contents** | 약관 내용 | string | | | 콘텐츠 내용입니다. | |
+| **receiveMethods** | 마케팅 수신 방법 | array | | | "MO", "EM", "PU" | |
+| **receiveTypes** | 사용자 수신 선택 | array | | | "MO" | |
+| **agreeYn** | 동의 여부 | string | | | | |
+```
+
+
+```
+## API 명세: 회원 정보 수정 (IDMI-REWARDS-008)
+
+---
+### 1. 개요
+이 API는 통합/Rewards/Web 회원의 정보를 수정하는 기능을 제공합니다.
+
+### 2. URI
+`/v1/membership/integration/update`
+
+### 3. 메서드
+`PUT`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **membershipUserInfoId** | 회원 아이디 | int | | | 200 | 통합회원/Web회원만 존재 |
+| **membershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose | |
+| **webMemberId** | 웹회원 아이디 | string | | | axlrose | |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberFirstName** | 영문 이름 | string | | Y | Gildong | |
+| **memberMiddleName** | 영문 중간 이름 | string | | Y | tests | |
+| **memberLastName** | 영문 성 | string | | Y | Hong | |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | 휴대전화 변경 시 PASS 인증 후 변경 |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberBirth** | 생년월일 | string | | Y | 19990101 | YYYYMMDD |
+| **zipCode** | 우편번호 | string | | | 12535 | |
+| **address1** | 집 주소 | string | | | 서울시 강남구 논현동 | |
+| **address2** | 상세 집 주소 | string | | | 101호 | |
+| **termInfos** | 약관 내역 | list | | | | |
+| **termInfoId** | 약관 유형 아이디 | string | | Y | T001 | |
+| **agreeYn** | 동의 여부 | string | | Y | Y | |
+| **termItemInfoId** | 약관 세부 아이디 | int | | Y | 10 | |
+| **version** | 약관 버전 | int | | Y | 4 | |
+| **receiveTypes** | 수신방법 종류 | array | | Y | "MO", "EM", "PU" | 없을 시 [] 배열로 전달 |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | null | |
+```
+
+
+```
+## API 명세: 비밀번호 변경 (IDMI-REWARDS-009)
+
+---
+### 1. 개요
+이 API는 회원의 비밀번호를 변경하는 기능을 제공합니다.
+
+### 2. URI
+`/v1/membership/integration/update/pw`
+
+### 3. 메서드
+`PUT`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **loginId** | 멤버십 아이디 / 통합 아이디 | string | | Y | axlrose | 통합이 아닌 경우, 웹회원 아이디 |
+| **oldLoginPw** | 이전 비밀번호 | string | | Y | test1234 | |
+| **newLoginPw** | 변경 비밀번호 | string | | Y | test4321 | |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | null | |
+```
+
+
+```
+## API 명세: 공통코드 조회 (IDMI-REWARDS-010)
+
+---
+### 1. 개요
+이 API는 공통 코드를 조회하며, 특히 탈퇴 사유 조회를 위해 사용됩니다.
+
+### 2. URI
+`/v1/membership/integration/reason`
+
+### 3. 메서드
+`GET`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **classCode** | 공통코드 | string | | Y | 22 | 탈퇴사유: 22 |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 List | list | Y | | |
+| **commonCode** | 회원 유형 | string | | Y | 001 | |
+| **commonName** | 멤버십 No | string | | Y | 멤버십 서비스 불만족으로 인한 탈퇴 | |
+```
+
+
+```
+## API 명세: 탈퇴 요청 (IDMI-REWARDS-011)
+
+---
+### 1. 개요
+이 API는 회원 계정을 잠금 처리(탈퇴 요청)합니다.
+
+### 2. URI
+`/v1/membership/hub/member/withdrawal/request`
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **memberType** | 회원 유형 | string | | Y | W | |
+| **loginId** | 회원 아이디 | string | | Y | axlrose | |
+| **loginPw** | 회원 패스워드 | string | | Y | axlrose123! | 회원 탈퇴 검증 pw |
+| **withdrawalReason** | 탈퇴 코드 | string | | Y | 001 | 탈퇴 코드 또는 기타 사유의 경우 바로 String 내용 입력 |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | null | |
+```
+
+
+```
+## API 명세: 회원 아이디 찾기 (IDMI-REWARDS-012)
+
+---
+### 1. 개요
+이 API는 회원의 아이디를 찾는 기능을 제공합니다.
+
+### 2. URI
+`/v1/membership/integration/find/id`
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **memberName** | 회원 이름 | string | | Y | 홍길동 | |
+| **memberEmail** | 회원 이메일 | string | | Y | test@gmail.com | |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | | | |
+| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **loginId** | 회원 아이디 | string | | | axlrose | |
+```
+
+
+```
+## API 명세: 비밀번호 찾기 (IDMI-REWARDS-013)
+
+---
+### 1. 개요
+이 API는 회원의 비밀번호를 찾는 기능을 제공합니다. 이 API는 협의 후 재개발될 예정입니다.
+
+### 2. URI
+`/v1/membership/integration/find/pw`
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **loginId** | 회원 아이디 | string | | Y | 홍길동 | U: 통합회원 / R: Rewards / W: Web |
+| **memberEmail** | 회원 이메일 | string | | Y | test@gmail.com | |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | null | |
+```
+
+
+```
+## API 명세: 신규 회원 정보 연동 (IDMI-REWARDS-014)
+
+---
+### 1. 개요
+이 API는 신규 회원 The Parnas 가입 시 회원 정보를 연동합니다.
+
+### 2. URI
+(URI 정보가 명세에 없습니다. 확인이 필요합니다.)
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **membershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **loginId** | | string | | | axlrose | |
+| **webMemberId** | 웹회원 아이디 | string | | Y | axlrose | |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
+| **memberLastName** | 영문 성 | string | | | Hong | |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberGender** | 성별 | int | | | 00 | 00: 남성 / 1: 여성 / 2: 기타 |
+| **memberBirth** | 생년월일 | string | | | 19990101 | YYYYMMDD |
+| **우편번호, 주소1, 주소2** | string | | | | | (해당 필드가 파라미터로 명확하게 분리되지 않음) |
+| **memberCi** | CI 값 | string | | | HC0/LEp6o3TQMPSwWDW8xlO3ZI480lnZSWKPYGXMXh93EE/B3rtdaw/VT36hwXIcOmr9q/PYsrOIDHSD0gB59A== | |
+| **joinDate** | 가입일자 | string | | | 20240308 | YYYYMMDD |
+| **extraMembershipInfo** | 추가 멤버십 정보 | object | | | | |
+| **extraMembershipType** | 멤버십 유형 | string | | | GM | GM: The Parnas Smart, G: The Parnas Gold, L: The Parnas Platinum |
+| **paymentBillNo** | 결제 빌번호 | string | | | 3858812923 | |
+| **paymentAmount** | 결제 금액 | int | | | 1000000 | |
+| **paymentDate** | 결제 일자 | string | | | 20250226235959 | YYYYMMDDhhmmss |
+| **termInfos** | 약관 내역 | list | | | | |
+| **termInfoId** | 약관 유형 아이디 | string | | Y | TOS | 이용약관: 더파르나스 이용약관, 마수동: 리워즈 마수동, 광수동: 리워즈 광수동 |
+| **agreeYn** | 동의 여부 | string | | Y | Y | |
+| **version** | 약관 버전 | int | | | 4 | |
+| **title** | 약관 제목 | string | | | 이용약관 | |
+| **receiveTypes** | 수신방법 종류 | array | | | EMAIL | 이메일, 전화, 메시지 |
+| **agreeDate** | 약관 동의 날짜 | string | | | 20250101235959 | YYYYMMDD |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 200 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | | | |
+| **cmsProfileId** | CMS 프로필 아이디 | int | | | 1231231 | |
+| **cmsMembershipId** | CMS 멤버십 아이디 | string | | | G1235533 | |
+```
+
+
+```
+## API 명세: 회원 정보 동기화 (H2O > CMS) (IDMI-REWARDS-015)
+
+---
+### 1. 개요
+이 API는 H2O에서 CMS로 회원 정보를 동기화하는 기능을 제공합니다.
+
+### 2. URI
+(URI 정보가 명세에 없습니다. 확인이 필요합니다.)
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **membershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose | |
+| **webMemberId** | 웹회원 아이디 | string | | Y | axlrose | |
+| **cmsProfileId** | CMS 프로필 아이디 | string | | Y | 213154512 | |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
+| **memberLastName** | 영문 성 | string | | | Hong | |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberGender** | 성별 | int | | | 00 | 00: 남성 / 1: 여성 / 2: 기타 |
+| **memberBirth** | 생년월일 | string | | | 19990101 | YYYYMMDD |
+| **우편번호, 주소1, 주소2** | string | | | | | (해당 필드가 파라미터로 명확하게 분리되지 않음) |
+| **memberCi** | CI 값 | string | | | HC0/LEp6o3TQMPSwWDW8xlO3ZI480lnZSWKPYGXMXh93EE/B3rtdaw/VT36hwXIcOmr9q/PYsrOIDHSD0gB59A== | |
+| **memberStatus** | 회원 상태 | string | | | 00 | 00: 유효 / 1: 계정잠금 / 2: 탈퇴 |
+| **joinDate** | 가입일자 | string | | | 20240308 | YYYYMMDD |
+| **withdrawlYn** | 탈퇴여부 | string | | | N | |
+| **withdrawlDate** | 탈퇴일자 | string | | | | |
+| **termInfos** | 약관 내역 | list | | | | |
+| **termInfoId** | 약관 유형 아이디 | string | | Y | MARKETING | 마수동, 광수동 |
+| **agreeYn** | 동의 여부 | string | | Y | Y | |
+| **version** | 약관 버전 | int | | | 4 | |
+| **title** | 약관 제목 | string | | | 이용약관 | |
+| **receiveTypes** | 수신방법 종류 | array | | | EMAIL | 이메일, 전화, 메시지 |
+| **agreeDate** | 약관 동의 날짜 | string | | | 20250101235959 | YYYYMMDD |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 200 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | null | |
+```
+
+
+```
+## API 명세: 회원 정보 동기화 (CMS > H2O) (IDMI-REWARDS-016)
+
+---
+### 1. 개요
+이 API는 CMS에서 H2O로 회원 정보를 동기화하는 기능을 제공합니다. 이름과 전화번호 검색 시 1명의 회원만 업데이트되며, 2명 이상일 경우 오류가 반환됩니다.
+
+### 2. URI
+`/v1/membership/integration/cms/sync`
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **membershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **keyMemberName** | 검색용 한글 이름 | string | | | 홍길동 | |
+| **keyMemberMobile** | 검색용 휴대전화 | string | | | 01098765432 | |
+| **cmsProfileId** | CMS 프로필 아이디 | int | | Y | 213154512 | |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberMiddleName** | 영문 중간 이름 | string | | | Hong | |
+| **memberLastName** | 영문 성 | string | | | Hong | |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberGender** | 성별 | int | | | 00 | 00: 남성 / 1: 여성 / 2: 기타 |
+| **memberBirth** | 생년월일 | string | | | 19990101 | YYYYMMDD |
+| **우편번호, 주소1, 주소2** | string | | | | | (해당 필드가 파라미터로 명확하게 분리되지 않음) |
+| **termInfos** | 약관 내역 | list | | | | |
+| **termInfoId** | 약관 유형 아이디 | string | | Y | MARKETING | 마수동, 광수동 |
+| **agreeYn** | 동의 여부 | string | | Y | Y | |
+| **version** | 약관 버전 | int | | | 4 | |
+| **title** | 약관 제목 | string | | | 이용약관 | |
+| **receiveTypes** | 수신방법 종류 | array | | | EMAIL | 이메일, 전화, 메시지 |
+| **agreeDate** | 약관 동의 날짜 | string | | | 20250101235959 | YYYYMMDD |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | null | |
+```
+
+
+```
+## API 명세: The Parnas 추가 가입 (IDMI-REWARDS-017)
+
+---
+### 1. 개요
+이 API는 기존 The Parnas 가입 회원이 추가로 The Parnas에 가입할 때 회원 정보를 연동합니다.
+
+### 2. URI
+(URI 정보가 명세에 없습니다. 확인이 필요합니다.)
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **membershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose | |
+| **webMemberId** | 웹회원 아이디 | string | | Y | axlrose | |
+| **cmsProfileId** | CMS 프로필 아이디 | int | | Y | 1231231 | |
+| **extraMembershipInfo** | 추가 멤버십 정보 | object | | | | |
+| **extraMembershipType** | 멤버십 유형 | string | | | G | G (골드), P (플래티넘), L (스마트) |
+| **paymentBillNo** | 결제 빌번호 | string | | | 3858812923 | |
+| **paymentAmount** | 결제 금액 | int | | | 1000000 | |
+| **paymentDate** | 결제 일자 | string | | | 20250226235959 | YYYYMMDDhhmmss |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 200 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | | | |
+| **cmsMembershipId** | CMS 멤버십 아이디 | string | | | 342123122 | |
+```
+
+
+```
+## API 명세: 회원 정보 동기화 (H2O > CRS) (IDMI-REWARDS-018)
+
+---
+### 1. 개요
+이 API는 H2O에서 CRS로 회원 정보를 동기화하는 기능을 제공합니다.
+
+### 2. URI
+(URI 정보가 명세에 없습니다. 확인이 필요합니다.)
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **membershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose | |
+| **webMemberId** | 웹회원 아이디 | string | | Y | axlrose | |
+| **cmsProfileId** | CMS 프로필 아이디 | int | | Y | 213154512 | |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
+| **memberLastName** | 영문 성 | string | | | Hong | |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberGender** | 성별 | int | | | 00 | 00: 남성 / 1: 여성 / 2: 기타 |
+| **memberBirth** | 생년월일 | string | | | 19990101 | YYYYMMDD |
+| **memberCi** | CI 값 | string | | | HC0/LEp6o3TQMPSwWDW8xlO3ZI480lnZSWKPYGXMXh93EE/B3rtdaw/VT36hwXIcOmr9q/PYsrOIDHSD0gB59A== | |
+| **memberStatus** | 회원 상태 | string | | | 00 | 00: 유효 / 1: 계정잠금 / 2: 탈퇴 |
+| **joinDate** | 가입일자 | string | | | 20240308 | YYYYMMDD |
+| **withdrawlYn** | 탈퇴여부 | string | | | N | |
+| **withdrawlDate** | 탈퇴일자 | string | | | | |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 200 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | null | |
+```
+
+
+```
+## API 명세: 이메일 인증 번호 확인 (외국인 전용) (IDMI-REWARDS-020)
+
+---
+### 1. 개요
+이 API는 이메일 인증 번호를 확인하는 기능을 제공합니다.
+
+### 2. URI
+`/v1/membership/integration/email/certification`
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **email** | 이메일 | string | | Y | test@gmail.com | 인증번호를 보낸 인증 메일 |
+| **certificationKey** | 이메일 인증번호 | int | | Y | 123456 | 이메일로 전송된 인증번호 |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | | |
+| **rejectYn** | 인증 결과 | string | | Y | Y | Y: 인증 성공, N: 인증 실패 |
+```
+
+
+```
+## API 명세: 이메일 인증 발송 (외국인 전용) (IDMI-REWARDS-021)
+
+---
+### 1. 개요
+이 API는 이메일 인증 번호를 발송하는 기능을 제공합니다.
+
+### 2. URI
+`/v1/membership/integration/email/certification`
+
+### 3. 메서드
+`GET`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **email** | 이메일 | string | | Y | test@gmail.com | 인증번호를 보낼 이메일 주소 |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | null | |
+```
+
+
+```
+## API 명세: 회원 정보 조회 (IDMI-REWARDS-022)
+
+---
+### 1. 개요
+이 API는 회원 정보를 조회하는 기능을 제공합니다.
+
+### 2. URI
+`/v1/membership/integration/user`
+
+### 3. 메서드
+`GET`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **longinId** | 로그인 ID | string | | Y | test | |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | | |
+| **memberType** | 회원 유형 | string | | Y | WU | WU: 통합회원 / R: Rewards / W: Web |
+| **integrationType** | 통합 유형 | string | | Y | UU | UU: 통합대상 / T: 전환대상 / N: 미대상 |
+| **webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원만 존재 |
+| **membershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | Y | axlrose | |
+| **webMemberId** | 웹회원 아이디 | string | | | test@gmail.com | |
+| **cmsProfileId** | CMS 프로필 아이디 | int | | | 1231231 | 통합회원/Web만 해당 - GUEST_NO |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
+| **memberLastName** | 영문 성 | string | | | Hong | |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberGender** | 성별 | int | | Y | 00 | 00: 남성 / 1: 여성 / 2: 기타 |
+| **memberBirth** | 생년월일 | string | | Y | 19990101 | YYYYMMDD |
+| **memberJoinDate** | 가입일 | string | | Y | 19990101 | YYYYMMDD / 웹회원: 웹회원 가입일, 통합회원: 리워즈 가입일 |
+| **employeeStatus** | 임직원여부 | string | | Y | N | |
+```
+
+
+```
+## API 명세: 멤버십 가입 (IDMI-REWARDS-023)
+
+---
+### 1. 개요
+이 API는 멤버십 추가 구매 등록 정보를 저장합니다.
+
+### 2. URI
+`/v1/membership/integration/payment`
+
+### 3. 메서드
+`POST`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **memberType** | 회원 유형 | string | | Y | W | WU: 통합회원 / R: Rewards / W: Web |
+| **loginId** | 회원 아이디 | string | | Y | axlose | |
+| **extraMembershipInfo** | 추가 멤버십 정보 | object | | | | |
+| **extraMembershipType** | 멤버십 유형 | string | | | G | G (골드), P (플래티넘), L (스마트) |
+| **paymentBillNo** | 결제 빌번호 | string | | | 3858812923 | |
+| **paymentAmount** | 결제 금액 | int | | | 1000000 | |
+| **paymentDate** | 결제 일자 | string | | | 20250226235959 | YYYYMMDDhhmmss |
+| **termInfos** | 약관 내역 | list | | | | |
+| **termInfoId** | 약관 유형 아이디 | string | | Y | TOS | 이용약관: 더파르나스 이용약관 |
+| **agreeYn** | 동의 여부 | string | | Y | Y | |
+| **version** | 약관 버전 | int | | | 4 | |
+| **title** | 약관 제목 | string | | | 이용약관 | |
+| **agreeDate** | 약관 동의 날짜 | string | | | 20250101235959 | YYYYMMDD |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | null | |
+```
+
+
+```
+## API 명세: 회원관리 목록 조회 (IDMI-REWARDS-024)
+
+---
+### 1. 개요
+이 API는 더 파르나스 모바일 관리자에서 회원관리 목록을 조회하는 기능을 제공합니다. 현재 논의 중인 API입니다.
+
+### 2. URI
+`/v1/membership/integration/user/list`
+
+### 3. 메서드
+`GET`
+
+---
+### 4. 요청 (Request)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **keyword** | | string | | Y | 홍길동 | 이름: 두 자 이상 부분 일치, 휴대폰, 이메일: 정확히 일치 |
+| **fields** | | string | | | name, mobile, email | |
+| **pageNo** | 페이지 번호 | int | | Y | 1 | 1페이지부터 시작 |
+| **limit** | 페이지 표시 개수 | int | | Y | 20 | 최대 30개 |
+
+---
+### 5. 응답 (Response)
+
+| 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
+|---|---|---|---|---|---|---|
+| **code** | 결과 코드 | string | | Y | 1000 | |
+| **message** | 메시지 | string | | Y | Success | |
+| **data** | 결과 Object | object | | Y | | |
+| **memberType** | 회원 유형 | string | | Y | WU | WU: 통합회원 / R: Rewards / W: Web |
+| **integrationType** | 통합 유형 | string | | Y | UU | UU: 통합대상 / T: 전환대상 / N: 미대상 |
+| **webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원만 존재 |
+| **membershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | Y | axlrose | |
+| **webMemberId** | 웹회원 아이디 | string | | | test@gmail.com | |
+| **cmsProfileId** | CMS 프로필 아이디 | int | | | 1231231 | 통합회원/Web만 해당 - GUEST_NO |
+| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
+| **memberLastName** | 영문 성 | string | | | Hong | |
+| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberGender** | 성별 | int | | Y | 00 | 00: 남성 / 1: 여성 / 2: 기타 |
+| **memberBirth** | 생년월일 | string | | Y | 19990101 | YYYYMMDD |
+| **memberJoinDate** | 가입일 | string | | Y | 19990101 | YYYYMMDD / 웹회원: 웹회원 가입일, 통합회원: 리워즈 가입일 |
+| **employeeStatus** | 임직원여부 | string | | Y | N | |
+```

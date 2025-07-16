@@ -1,0 +1,180 @@
+@startuml
+
+actor "User/IWS, The Parnas" as UserIWS
+participant H2O as H2O
+participant CMS as CMS
+participant CRS as CRS
+
+== 1. 신규 가입 ==
+UserIWS -> H2O: **1.1 리워즈 가입 약관 조회** (MI-REWARDS-003)
+activate H2O
+H2O --> UserIWS: 약관 응답
+deactivate H2O
+
+alt 리워즈 유료 가입 시 (1.2)
+    UserIWS -> H2O: **1.2.1 멤버십 가입 요청** (MI-REWARDS-023)
+    activate H2O
+    H2O -> CMS: **1.2.1.1 신규 회원 정보 연동** (MI-REWARDS-014)
+    activate CMS
+    note right of CMS: **이용약관**: 더 파르나스 이용약관
+    CMS --> H2O: 연동 응답
+    deactivate CMS
+    H2O --> UserIWS: 가입 응답
+    deactivate H2O
+end
+
+UserIWS -> H2O: **1.3 리워즈 회원 전환 가입 요청** (MI-REWARDS-006)
+activate H2O
+UserIWS -> H2O: **1.3.1 아이디 중복 체크 요청** (MI-REWARDS-004)
+H2O --> UserIWS: 중복 체크 응답
+H2O --> UserIWS: 전환 가입 응답
+deactivate H2O
+
+== 2. 로그인 ==
+UserIWS -> H2O: **2.1 로그인 요청** (MI-REWARDS-001)
+activate H2O
+note right of H2O: 로그인 회원의 상태를\n**통합대상(U), 전환대상(T), 미대상(N)**으로 구분
+H2O --> UserIWS: 로그인 응답 (회원 상태 포함)
+
+alt **2.2 통합대상인 경우**
+    UserIWS -> UserIWS: 2.2.1 **통합 아이디 선택**\n(파르나스 리워즈 아이디 또는 웹 회원 아이디)
+    UserIWS -> UserIWS: 2.2.2 **통합 비밀번호 설정**
+    UserIWS -> H2O: **2.2.3 통합 등록 요청** (MI-REWARDS-002)
+    activate H2O
+    H2O --> UserIWS: 통합 등록 응답
+    deactivate H2O
+else **2.3 전환대상인 경우**
+    UserIWS -> H2O: **2.3.1 리워즈 가입 약관 조회** (MI-REWARDS-003)
+    activate H2O
+    H2O --> UserIWS: 약관 응답
+    deactivate H2O
+    alt 리워즈 유료 가입 시 (2.3.2)
+        UserIWS -> H2O: **2.3.2.1 멤버십 가입 요청** (MI-REWARDS-023)
+        activate H2O
+        H2O -> CMS: **2.3.2.1.1 신규 회원 정보 연동** (MI-REWARDS-014)
+        activate CMS
+        CMS --> H2O: 연동 응답
+        deactivate CMS
+        H2O --> UserIWS: 가입 응답
+        deactivate H2O
+    end
+    UserIWS -> H2O: **2.3.3 리워즈 회원 전환 가입 요청** (MI-REWARDS-006)
+    activate H2O
+    UserIWS -> H2O: **2.3.3.1 아이디 중복 체크 요청** (MI-REWARDS-004)
+    H2O --> UserIWS: 중복 체크 응답
+    H2O --> UserIWS: 전환 가입 응답
+    deactivate H2O
+else **2.4 미대상인 경우**
+    UserIWS -> UserIWS: 미대상 처리 (로그인 실패 등)
+end
+
+== 3. 아이디/비밀번호 찾기 ==
+UserIWS -> H2O: **3.1 아이디 찾기 요청** (MI-REWARDS-012)
+activate H2O
+H2O --> UserIWS: 응답
+deactivate H2O
+
+UserIWS -> H2O: **3.2 비밀번호 찾기 요청** (MI-REWARDS-013)
+activate H2O
+H2O --> UserIWS: 응답 (이메일 발송 등)
+deactivate H2O
+
+== 4. 회원 정보 수정 ==
+group **4.1 회원 정보 수정**
+    UserIWS -> H2O: **4.1.1 비밀번호 확인 요청** (MI-REWARDS-007)
+    activate H2O
+    H2O --> UserIWS: 확인 응답
+    deactivate H2O
+    UserIWS -> UserIWS: 회원 정보 수정 화면 표시
+    UserIWS -> H2O: **4.1.2 이메일 중복 여부 확인** (MI-REWARDS-005)
+    activate H2O
+    H2O --> UserIWS: 중복 확인 응답
+    deactivate H2O
+    UserIWS -> H2O: **4.1.3 회원 정보 수정 요청** (MI-REWARDS-008)
+    activate H2O
+    H2O --> UserIWS: 수정 완료 응답
+    deactivate H2O
+end
+
+group **4.2 비밀번호 변경**
+    UserIWS -> H2O: **4.2.1 비밀번호 변경 요청** (MI-REWARDS-009)
+    activate H2O
+    H2O --> UserIWS: 변경 완료 응답
+    deactivate H2O
+end
+
+group **4.3 탈퇴**
+    UserIWS -> H2O: **4.3.1 비밀번호 확인 요청** (MI-REWARDS-007)
+    activate H2O
+    H2O --> UserIWS: 확인 응답
+    deactivate H2O
+    UserIWS -> H2O: **4.3.2 탈퇴 사유 코드 조회** (MI-REWARDS-010)
+    activate H2O
+    H2O --> UserIWS: 사유 코드 응답
+    deactivate H2O
+    UserIWS -> H2O: **4.3.3 탈퇴 요청** (MI-REWARDS-011)
+    activate H2O
+    H2O --> UserIWS: 탈퇴 완료 응답
+    deactivate H2O
+end
+
+== 5. 외국인 전용 ==
+group **5.1 회원 가입**
+    UserIWS -> H2O: **5.1.1 이메일 인증번호 발송 요청** (MI-REWARDS-021)
+    activate H2O
+    H2O --> UserIWS: 발송 응답
+    deactivate H2O
+    UserIWS -> H2O: **5.1.2 이메일 인증번호 확인 요청** (MI-REWARDS-020)
+    activate H2O
+    H2O --> UserIWS: 확인 응답
+    deactivate H2O
+end
+
+== 6. 회원 정보 동기화 ==
+alt **6.1 신규 회원이 리워즈 유료 가입 시**
+    H2O -> CMS: **6.1.1 신규 회원 정보 연동** (MI-REWARDS-014)
+    activate CMS
+    note right of CMS: **이용약관**: 더 파르나스 이용약관\n**마수동**: 리워즈 마수동\n**광수동**: 리워즈 광수동
+    CMS --> H2O: 연동 응답
+    deactivate CMS
+end
+
+alt **6.2 기존 회원이 리워즈 유료 가입 시**
+    H2O -> CMS: **6.2.1 기존 회원 정보 연동** (MI-REWARDS-017)
+    activate CMS
+    CMS --> H2O: 연동 응답
+    deactivate CMS
+end
+
+alt **6.3 회원 정보 수정 시 (H2O > CMS)**
+    H2O -> CMS: **6.3.1 회원 정보 동기화** (MI-REWARDS-015)
+    activate CMS
+    CMS --> H2O: 동기화 응답
+    deactivate CMS
+end
+
+alt **6.4 CMS에서 회원 정보 수정 시 (CMS > H2O)**
+    CMS -> H2O: **6.4.1 회원 정보 동기화** (MI-REWARDS-016)
+    activate H2O
+    note left of H2O: 이름, 전화번호 검색 시 1명의 경우만 업데이트\n2명 이상일 경우 오류 리턴
+    H2O --> CMS: 동기화 응답
+    deactivate H2O
+end
+
+== 7. 기타 ==
+H2O -> CRS: **7.1 회원 정보 동기화** (MI-REWARDS-018)
+activate CRS
+CRS --> H2O: 동기화 응답
+deactivate CRS
+
+UserIWS -> H2O: **7.2 회원 정보 조회 요청** (MI-REWARDS-022)
+activate H2O
+H2O --> UserIWS: 조회 응답
+deactivate H2O
+
+UserIWS -> H2O: **7.3 회원 관리 목록 조회** (MI-REWARDS-024)
+activate H2O
+H2O --> UserIWS: 목록 응답
+deactivate H2O
+
+@enduml
