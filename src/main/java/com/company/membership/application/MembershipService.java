@@ -187,7 +187,44 @@ public class MembershipService {
     }
 
     /**
+     * 약관 조회
+     */
+    public TermsResponse getTerms(String language) {
+        // TODO: 실제 약관 데이터베이스에서 조회하도록 구현
+        TermsResponse response = new TermsResponse();
+        response.setCode("1000");
+        response.setMessage("Success");
+        
+        TermsResponse.TermsData data = new TermsResponse.TermsData();
+        data.setLanguage(language);
+        data.setTerms("이용약관 내용...");
+        data.setPrivacyPolicy("개인정보처리방침 내용...");
+        
+        response.setData(data);
+        return response;
+    }
+
+    /**
      * 비밀번호 확인
+     */
+    public UpdateResponse passwordCheck(PasswordCheckRequest request) {
+        Optional<Member> memberOpt = memberRepository.findByLoginId(request.getLoginId());
+        
+        if (memberOpt.isEmpty()) {
+            return createErrorResponse(404, "존재하지 않는 회원입니다.");
+        }
+        
+        Member member = memberOpt.get();
+        
+        if (member.getPassword() == null || !member.getPassword().matches(request.getLoginPw())) {
+            return createErrorResponse(401, "비밀번호가 일치하지 않습니다.");
+        }
+        
+        return createUpdateResponse(member);
+    }
+
+    /**
+     * 비밀번호 확인 (내부용)
      */
     public boolean checkPassword(PasswordCheckRequest request) {
         Optional<Member> memberOpt = memberRepository.findByLoginId(request.getLoginId());
@@ -432,9 +469,52 @@ public class MembershipService {
         return summary;
     }
 
-    private <T> T createErrorResponse(String code, String message) {
-        // Generic error response creation - 각 Response 타입에 맞게 구현 필요
-        return null;
+    private LoginResponse createErrorResponse(int code, String message) {
+        LoginResponse response = new LoginResponse();
+        response.setCode(String.valueOf(code));
+        response.setMessage(message);
+        response.setData(null);
+        return response;
+    }
+
+    private RegisterResponse createErrorResponse(int code, String message) {
+        RegisterResponse response = new RegisterResponse();
+        response.setCode(String.valueOf(code));
+        response.setMessage(message);
+        response.setData(null);
+        return response;
+    }
+
+    private JoinResponse createErrorResponse(int code, String message) {
+        JoinResponse response = new JoinResponse();
+        response.setCode(String.valueOf(code));
+        response.setMessage(message);
+        response.setData(null);
+        return response;
+    }
+
+    private UpdateResponse createErrorResponse(int code, String message) {
+        UpdateResponse response = new UpdateResponse();
+        response.setCode(String.valueOf(code));
+        response.setMessage(message);
+        response.setData(null);
+        return response;
+    }
+
+    private UpdatePasswordResponse createErrorResponse(int code, String message) {
+        UpdatePasswordResponse response = new UpdatePasswordResponse();
+        response.setCode(String.valueOf(code));
+        response.setMessage(message);
+        response.setData(null);
+        return response;
+    }
+
+    private UserResponse createErrorResponse(int code, String message) {
+        UserResponse response = new UserResponse();
+        response.setCode(String.valueOf(code));
+        response.setMessage(message);
+        response.setData(null);
+        return response;
     }
 
     private UpdatePasswordResponse createSuccessResponse(String message) {

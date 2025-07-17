@@ -16,61 +16,61 @@ import java.util.stream.Collectors;
 
 @Repository
 public class MemberRepositoryImpl implements MemberRepository {
-    private final MemberRepository memberRepository;
+    private final MemberEntityRepository memberEntityRepository;
 
     @Autowired
-    public MemberRepositoryImpl(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
+    public MemberRepositoryImpl(MemberEntityRepository memberEntityRepository) {
+        this.memberEntityRepository = memberEntityRepository;
     }
 
     @Override
     public Member save(Member member) {
         MemberEntity entity = MemberMapper.toEntity(member);
-        MemberEntity savedEntity = memberRepository.save(entity);
+        MemberEntity savedEntity = memberEntityRepository.save(entity);
         return MemberMapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<Member> findById(MemberId id) {
         if (id == null) return Optional.empty();
-        Optional<MemberEntity> entityOpt = memberRepository.findById(id.getValue());
+        Optional<MemberEntity> entityOpt = memberEntityRepository.findById(id.getValue());
         return entityOpt.map(MemberMapper::toDomain);
     }
 
     @Override
     public Optional<Member> findByLoginId(String loginId) {
-        Optional<MemberEntity> entityOpt = memberRepository.findByLoginId(loginId);
+        Optional<MemberEntity> entityOpt = memberEntityRepository.findByLoginId(loginId);
         return entityOpt.map(MemberMapper::toDomain);
     }
 
     @Override
     public Optional<Member> findByEmail(Email email) {
         if (email == null) return Optional.empty();
-        Optional<MemberEntity> entityOpt = memberRepository.findByMemberEmail(email.toString());
+        Optional<MemberEntity> entityOpt = memberEntityRepository.findByMemberEmail(email.toString());
         return entityOpt.map(MemberMapper::toDomain);
     }
 
     @Override
     public Optional<Member> findByMembershipNo(String membershipNo) {
-        Optional<MemberEntity> entityOpt = memberRepository.findByMembershipNo(membershipNo);
+        Optional<MemberEntity> entityOpt = memberEntityRepository.findByMembershipNo(membershipNo);
         return entityOpt.map(MemberMapper::toDomain);
     }
 
     @Override
     public Optional<Member> findByWebMemberId(String webMemberId) {
-        Optional<MemberEntity> entityOpt = memberRepository.findByWebMemberId(webMemberId);
+        Optional<MemberEntity> entityOpt = memberEntityRepository.findByWebMemberId(webMemberId);
         return entityOpt.map(MemberMapper::toDomain);
     }
 
     @Override
     public Optional<Member> findByCmsProfileId(Integer cmsProfileId) {
-        Optional<MemberEntity> entityOpt = memberRepository.findByCmsProfileId(cmsProfileId);
+        Optional<MemberEntity> entityOpt = memberEntityRepository.findByCmsProfileId(cmsProfileId);
         return entityOpt.map(MemberMapper::toDomain);
     }
 
     @Override
     public List<Member> findByMemberType(String memberType) {
-        List<MemberEntity> entities = memberRepository.findByMemberType(memberType);
+        List<MemberEntity> entities = memberEntityRepository.findByMemberType(memberType);
         return entities.stream()
                 .map(MemberMapper::toDomain)
                 .collect(Collectors.toList());
@@ -78,7 +78,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public List<Member> findByIntegrationType(String integrationType) {
-        List<MemberEntity> entities = memberRepository.findByIntegrationType(integrationType);
+        List<MemberEntity> entities = memberEntityRepository.findByIntegrationType(integrationType);
         return entities.stream()
                 .map(MemberMapper::toDomain)
                 .collect(Collectors.toList());
@@ -86,7 +86,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public List<Member> findByStatus(String status) {
-        List<MemberEntity> entities = memberRepository.findByStatus(status);
+        List<MemberEntity> entities = memberEntityRepository.findByStatus(status);
         return entities.stream()
                 .map(MemberMapper::toDomain)
                 .collect(Collectors.toList());
@@ -98,9 +98,9 @@ public class MemberRepositoryImpl implements MemberRepository {
         List<MemberEntity> entities;
         
         if (fields != null && !fields.isEmpty()) {
-            entities = memberRepository.findByFields(keyword, fields, pageable);
+            entities = memberEntityRepository.findByFields(keyword, fields, pageable).getContent();
         } else {
-            entities = memberRepository.findByKeyword(keyword, pageable);
+            entities = memberEntityRepository.findByKeyword(keyword, pageable).getContent();
         }
         
         return entities.stream()
@@ -110,34 +110,34 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public boolean existsByLoginId(String loginId) {
-        return memberRepository.existsByLoginId(loginId);
+        return memberEntityRepository.existsByLoginId(loginId);
     }
 
     @Override
     public boolean existsByEmail(Email email) {
         if (email == null) return false;
-        return memberRepository.existsByMemberEmail(email.toString());
+        return memberEntityRepository.existsByMemberEmail(email.toString());
     }
 
     @Override
     public boolean existsByMembershipNo(String membershipNo) {
-        return memberRepository.existsByMembershipNo(membershipNo);
+        return memberEntityRepository.existsByMembershipNo(membershipNo);
     }
 
     @Override
     public boolean existsByWebMemberId(String webMemberId) {
-        return memberRepository.existsByWebMemberId(webMemberId);
+        return memberEntityRepository.existsByWebMemberId(webMemberId);
     }
 
     @Override
     public void delete(Member member) {
         MemberEntity entity = MemberMapper.toEntity(member);
-        memberRepository.delete(entity);
+        memberEntityRepository.delete(entity);
     }
 
     @Override
     public List<Member> findAll() {
-        List<MemberEntity> entities = memberRepository.findAll();
+        List<MemberEntity> entities = memberEntityRepository.findAll();
         return entities.stream()
                 .map(MemberMapper::toDomain)
                 .collect(Collectors.toList());
