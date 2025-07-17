@@ -45,7 +45,7 @@ public class MembershipService {
         
         // 2. 회원 상태 확인
         if (!member.canLogin()) {
-            return createErrorResponse("43, "로그인이 불가능한 회원입니다.");
+            return createErrorResponse(43, "로그인이 불가능한 회원입니다.");
         }
         
         // 3. 비밀번호 검증 (일반 로그인만)
