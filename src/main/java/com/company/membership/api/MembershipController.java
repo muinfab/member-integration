@@ -27,6 +27,7 @@ public class MembershipController {
 
     /**
      * 로그인
+     * API 명세서 코드: IDMI-REWARDS-001
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -36,6 +37,7 @@ public class MembershipController {
 
     /**
      * 회원가입 (외국인 전용)
+     * API 명세서 코드: IDMI-REWARDS-002
      */
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -45,6 +47,7 @@ public class MembershipController {
 
     /**
      * 약관 조회
+     * API 명세서 코드: IDMI-REWARDS-003
      */
     @GetMapping("/terms")
     public ResponseEntity<TermsResponse> getTerms(
@@ -55,6 +58,7 @@ public class MembershipController {
 
     /**
      * ID 중복 확인
+     * API 명세서 코드: IDMI-REWARDS-004
      */
     @GetMapping("/check/id")
     public ResponseEntity<CheckIdResponse> checkId(
@@ -65,6 +69,7 @@ public class MembershipController {
 
     /**
      * 이메일 중복 확인
+     * API 명세서 코드: IDMI-REWARDS-005
      */
     @GetMapping("/check/email")
     public ResponseEntity<CheckEmailResponse> checkEmail(
@@ -75,6 +80,7 @@ public class MembershipController {
 
     /**
      * 회원 가입
+     * API 명세서 코드: IDMI-REWARDS-006
      */
     @PostMapping("/join")
     public ResponseEntity<JoinResponse> join(@Valid @RequestBody JoinRequest request) {
@@ -84,6 +90,7 @@ public class MembershipController {
 
     /**
      * 회원 정보 수정
+     * API 명세서 코드: IDMI-REWARDS-008
      */
     @PutMapping("/update")
     public ResponseEntity<UpdateResponse> update(@Valid @RequestBody UpdateRequest request) {
@@ -93,6 +100,7 @@ public class MembershipController {
 
     /**
      * 비밀번호 확인
+     * API 명세서 코드: IDMI-REWARDS-007
      */
     @PostMapping("/update/password-check")
     public ResponseEntity<UpdateResponse> passwordCheck(@Valid @RequestBody PasswordCheckRequest request) {
@@ -102,6 +110,7 @@ public class MembershipController {
 
     /**
      * 비밀번호 변경
+     * API 명세서 코드: IDMI-REWARDS-009
      */
     @PutMapping("/update/pw")
     public ResponseEntity<UpdatePasswordResponse> updatePassword(@Valid @RequestBody UpdatePasswordRequest request) {
@@ -111,6 +120,7 @@ public class MembershipController {
 
     /**
      * 회원 정보 조회
+     * API 명세서 코드: IDMI-REWARDS-022
      */
     @GetMapping("/user")
     public ResponseEntity<UserResponse> getUser(
@@ -121,6 +131,7 @@ public class MembershipController {
 
     /**
      * 회원 목록 조회
+     * API 명세서 코드: IDMI-REWARDS-024
      */
     @GetMapping("/user/list")
     public ResponseEntity<UserListResponse> getUserList(
