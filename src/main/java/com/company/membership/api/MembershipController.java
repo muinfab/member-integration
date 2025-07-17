@@ -103,7 +103,7 @@ public class MembershipController {
      * 비밀번호 확인
      * API 명세서 코드: IDMI-REWARDS-007
      */
-    @PostMapping("/update/password-check")
+    @PostMapping("/update")
     public ResponseEntity<UpdateResponse> passwordCheck(@Valid @RequestBody PasswordCheckRequest request) {
         UpdateResponse response = membershipService.passwordCheck(request);
         return ResponseEntity.ok(response);
