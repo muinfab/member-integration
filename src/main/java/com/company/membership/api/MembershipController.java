@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/membership/integration")
@@ -141,5 +142,135 @@ public class MembershipController {
             @NotNull(message = "페이지 크기는 필수입니다") @Min(value = 1, message = "페이지 크기는 1 이상이어야 합니다") @RequestParam int limit) {
         UserListResponse response = membershipService.getUserList(keyword, fields, pageNo, limit);
         return ResponseEntity.ok(response);
+    }
+
+    // ========== 미구현 API들 ==========
+
+    /**
+     * 공통코드 조회
+     * API 명세서 코드: IDMI-REWARDS-010
+     */
+    @GetMapping("/reason")
+    public ResponseEntity<CommonCodeResponse> getCommonCodes(
+            @NotBlank(message = "공통코드는 필수입니다") @RequestParam String classCode) {
+        CommonCodeResponse response = membershipService.getCommonCodes(classCode);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 탈퇴 요청
+     * API 명세서 코드: IDMI-REWARDS-011
+     */
+    @PostMapping("/hub/member/withdrawal/request")
+    public ResponseEntity<WithdrawalResponse> requestWithdrawal(@Valid @RequestBody WithdrawalRequest request) {
+        WithdrawalResponse response = membershipService.requestWithdrawal(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 회원 아이디 찾기
+     * API 명세서 코드: IDMI-REWARDS-012
+     */
+    @PostMapping("/find/id")
+    public ResponseEntity<FindIdResponse> findId(@Valid @RequestBody FindIdRequest request) {
+        FindIdResponse response = membershipService.findId(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 비밀번호 찾기
+     * API 명세서 코드: IDMI-REWARDS-013
+     */
+    @PostMapping("/find/pw")
+    public ResponseEntity<FindPasswordResponse> findPassword(@Valid @RequestBody FindPasswordRequest request) {
+        FindPasswordResponse response = membershipService.findPassword(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 이메일 인증 번호 확인 (외국인 전용)
+     * API 명세서 코드: IDMI-REWARDS-020
+     */
+    @PostMapping("/email/certification")
+    public ResponseEntity<EmailCertificationResponse> verifyEmailCertification(@Valid @RequestBody EmailCertificationRequest request) {
+        EmailCertificationResponse response = membershipService.verifyEmailCertification(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 이메일 인증 번호 발송 (외국인 전용)
+     * API 명세서 코드: IDMI-REWARDS-021
+     */
+    @GetMapping("/email/certification")
+    public ResponseEntity<EmailCertificationResponse> sendEmailCertification(
+            @NotBlank(message = "이메일은 필수입니다") @RequestParam String email) {
+        EmailCertificationResponse response = membershipService.sendEmailCertification(email);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 멤버십 가입
+     * API 명세서 코드: IDMI-REWARDS-023
+     */
+    @PostMapping("/payment")
+    public ResponseEntity<MembershipPaymentResponse> registerMembership(@Valid @RequestBody MembershipPaymentRequest request) {
+        MembershipPaymentResponse response = membershipService.registerMembership(request);
+        return ResponseEntity.ok(response);
+    }
+
+    // ========== 시스템 연동 API들 (URI 미정) ==========
+
+    /**
+     * 신규 회원 정보 연동
+     * API 명세서 코드: IDMI-REWARDS-014
+     * TODO: URI 확인 필요
+     */
+    @PostMapping("/integration/new-member")
+    public ResponseEntity<Object> integrateNewMember(@Valid @RequestBody Object request) {
+        // TODO: 실제 구현 필요
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 회원 정보 동기화 (H2O > CMS)
+     * API 명세서 코드: IDMI-REWARDS-015
+     * TODO: URI 확인 필요
+     */
+    @PostMapping("/integration/sync/h2o-to-cms")
+    public ResponseEntity<Object> syncH2oToCms(@Valid @RequestBody Object request) {
+        // TODO: 실제 구현 필요
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 회원 정보 동기화 (CMS > H2O)
+     * API 명세서 코드: IDMI-REWARDS-016
+     */
+    @PostMapping("/cms/sync")
+    public ResponseEntity<Object> syncCmsToH2o(@Valid @RequestBody Object request) {
+        // TODO: 실제 구현 필요
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * The Parnas 추가 가입
+     * API 명세서 코드: IDMI-REWARDS-017
+     * TODO: URI 확인 필요
+     */
+    @PostMapping("/integration/parnas-additional")
+    public ResponseEntity<Object> registerParnasAdditional(@Valid @RequestBody Object request) {
+        // TODO: 실제 구현 필요
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 회원 정보 동기화 (H2O > CRS)
+     * API 명세서 코드: IDMI-REWARDS-018
+     * TODO: URI 확인 필요
+     */
+    @PostMapping("/integration/sync/h2o-to-crs")
+    public ResponseEntity<Object> syncH2oToCrs(@Valid @RequestBody Object request) {
+        // TODO: 실제 구현 필요
+        return ResponseEntity.ok().build();
     }
 } 

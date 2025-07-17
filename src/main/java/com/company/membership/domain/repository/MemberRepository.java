@@ -93,4 +93,9 @@ public interface MemberRepository {
      * 모든 회원 조회
      */
     List<Member> findAll();
+    
+    /**
+     * 이름과 이메일로 회원 조회
+     */
+    Optional<Member> findByNameAndEmail(String memberName, Email email);
 } 

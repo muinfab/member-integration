@@ -142,4 +142,11 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .map(MemberMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<Member> findByNameAndEmail(String memberName, Email email) {
+        if (email == null) return Optional.empty();
+        Optional<MemberEntity> entityOpt = memberEntityRepository.findByMemberNameAndMemberEmail(memberName, email.toString());
+        return entityOpt.map(MemberMapper::toDomain);
+    }
 } 

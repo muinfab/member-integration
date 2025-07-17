@@ -74,6 +74,11 @@ public interface MemberEntityRepository extends JpaRepository<MemberEntity, Long
     boolean existsByWebMemberId(String webMemberId);
     
     /**
+     * 이름과 이메일로 회원 조회
+     */
+    Optional<MemberEntity> findByMemberNameAndMemberEmail(String memberName, String memberEmail);
+    
+    /**
      * 키워드로 회원 검색
      */
     @Query("SELECT m FROM MemberEntity m WHERE " +
