@@ -14,21 +14,7 @@ database Database as "Database"
 Client -> Controller: POST /v1/membership/integration/join
 activate Controller
 
-note right of Client: {
-  "joinType": 1,
-  "joinMethod": 0,
-  "joinId": "axlrose",
-  "joinPw": "password123",
-  "channelId": 3670111365,
-  "webMemberId": "test@gmail.com",
-  "memberName": "홍길동",
-  "memberEmail": "test@gmail.com",
-  "memberMobile": "01098765432",
-  "memberGender": 0,
-  "memberBirth": "19990101",
-  "localYn": "Y",
-  "termInfos": [...]
-}
+note right of Client: joinType: 1\njoinMethod: 0\njoinId: axlrose\njoinPw: password123\nchannelId: 3670111365\nwebMemberId: test@gmail.com\nmemberName: 홍길동\nmemberEmail: test@gmail.com\nmemberMobile: 01098765432\nmemberGender: 0\nmemberBirth: 19990101\nlocalYn: Y\ntermInfos: [...]
 
 Controller -> Controller: 요청 파라미터 검증
 note right: - 필수 필드 검증\n- 이메일/휴대폰 형식 검증\n- 약관 동의 여부 검증
@@ -49,7 +35,6 @@ alt 아이디 중복
     Controller --> Client: HTTP 400\n아이디 중복 오류
     deactivate Controller
     deactivate Service
-    stop
 end
 
 Service -> Service: 이메일 중복 체크
@@ -65,7 +50,6 @@ alt 이메일 중복
     Controller --> Client: HTTP 400\n이메일 중복 오류
     deactivate Controller
     deactivate Service
-    stop
 end
 
 Service -> Service: 비밀번호 암호화

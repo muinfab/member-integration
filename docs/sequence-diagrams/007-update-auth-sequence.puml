@@ -1,0 +1,93 @@
+@startuml 007-update-auth-sequence
+!theme plain
+title 회원 정보 수정 - 비밀번호 인증 API 시퀀스 다이어그램 (IDMI-REWARDS-007)
+
+actor Client as "클라이언트"
+participant Controller as "MembershipController"
+participant Service as "MembershipService"
+participant Repository as "MemberRepository"
+participant TermsRepository as "TermsRepository"
+database Database as "Database"
+
+== 비밀번호 인증 요청 ==
+
+Client -> Controller: POST /v1/membership/integration/update
+activate Controller
+
+note right of Client: memberType: U\nloginId: axlrose\nloginPw: $2a$10$x9Sd07/Mj0LkDRRHQs24h...
+
+Controller -> Controller: 요청 파라미터 검증
+note right: - memberType (필수)\n- loginId (필수)\n- loginPw (필수)
+
+Controller -> Service: authenticateForUpdate(memberType, loginId, loginPw)
+activate Service
+
+Service -> Service: 회원 유형별 조회 조건 설정
+note right: U: 통합회원\nR: Rewards\nW: Web
+
+Service -> Repository: findByMemberTypeAndLoginId(memberType, loginId)
+activate Repository
+Repository -> Database: SELECT * FROM members\nWHERE member_type = ?\nAND (login_id = ?\nOR rewards_membership_id = ?\nOR web_member_id = ?)
+Database --> Repository: 회원 정보
+Repository --> Service: Member member
+deactivate Repository
+
+alt 회원 정보 없음
+    Service --> Controller: ErrorResponse(회원 정보 없음)
+    Controller --> Client: HTTP 404\n회원 정보 없음
+    deactivate Controller
+    deactivate Service
+end
+
+Service -> Service: 비밀번호 검증
+note right: BCrypt로 비밀번호 해시 비교
+
+alt 비밀번호 불일치
+    Service --> Controller: ErrorResponse(비밀번호 불일치)
+    Controller --> Client: HTTP 401\n비밀번호 오류
+    deactivate Controller
+    deactivate Service
+end
+
+Service -> Service: 회원 상세 정보 조회
+Service -> Repository: findMemberWithDetails(member.getId())
+activate Repository
+Repository -> Database: SELECT * FROM members\nWHERE id = ?
+Database --> Repository: 회원 상세 정보
+Repository --> Service: Member memberDetails
+deactivate Repository
+
+Service -> Service: 약관 동의 정보 조회
+Service -> TermsRepository: findTermsByMemberId(member.getId())
+activate TermsRepository
+TermsRepository -> Database: SELECT * FROM terms_agreement\nWHERE member_id = ?
+Database --> TermsRepository: 약관 동의 정보
+TermsRepository --> Service: List<TermsAgreement> termInfos
+deactivate TermsRepository
+
+Service -> Service: 응답 데이터 구성
+note right: - memberInfo: 회원 정보\n- termInfos: 약관 동의 정보
+
+Service --> Controller: UpdateAuthResponse(memberInfo, termInfos)
+deactivate Service
+
+Controller -> Controller: 응답 데이터 구성
+note right: resultCode: 1000\nmsg: Success\ndata.memberInfo: 회원 정보\n- memberType: U\n- integrationType: N\n- memberName: 홍길동\n- memberEmail: test@gmail.com\ndata.termInfos: 약관 동의 목록
+
+Controller --> Client: HTTP 200 OK\n비밀번호 인증 성공 응답
+deactivate Controller
+
+== 에러 처리 ==
+
+alt 파라미터 검증 실패
+    Controller -> Controller: 파라미터 검증 실패 처리
+    Controller --> Client: HTTP 400\nBad Request
+end
+
+alt 데이터베이스 오류
+    Service -> Service: 데이터베이스 오류 처리
+    Service --> Controller: ErrorResponse
+    Controller --> Client: HTTP 500\nInternal Server Error
+end
+
+@enduml 
