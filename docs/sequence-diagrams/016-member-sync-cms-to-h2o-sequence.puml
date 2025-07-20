@@ -1,0 +1,92 @@
+@startuml 016-member-sync-cms-to-h2o-sequence
+!theme plain
+title 회원 정보 동기화 API 시퀀스 다이어그램 (IDMI-REWARDS-016)
+
+participant "CMS\n(외부 CMS 서버)" as CMS
+participant "H2O Controller" as H2OController
+participant "H2O Service" as H2OService
+participant "H2O Repository" as H2ORepository
+database Database as Database
+
+== 회원 정보 동기화 (CMS > H2O) ==
+
+CMS -> H2OController: POST /v1/membership/integration/cms/sync
+activate H2OController
+
+note right of CMS: CMS에서 H2O로 회원 정보 동기화\nmembershipNo, keyMemberName, keyMemberMobile\ncmsProfileId, memberName, memberFirstName\nmemberMiddleName, memberLastName, memberMobile\nmemberEmail, memberGender, memberBirth\ntermInfos 등
+
+H2OController -> H2OController: 요청 파라미터 검증
+note right: - 필수 파라미터 검증\n- 검색 조건 검증 (keyMemberName, keyMemberMobile)
+
+H2OController -> H2OService: syncMemberFromCMS(syncRequest)
+activate H2OService
+
+H2OService -> H2OService: 회원 검색 조건 확인
+note right: keyMemberName과 keyMemberMobile로\n회원을 검색할 수 있는지 확인
+
+H2OService -> H2ORepository: findByMemberNameAndMemberMobile(keyMemberName, keyMemberMobile)
+activate H2ORepository
+H2ORepository -> Database: SELECT * FROM members\nWHERE member_name = ?\nAND member_mobile = ?\nAND member_status = 'ACTIVE'
+Database --> H2ORepository: 회원 정보
+H2ORepository --> H2OService: List<Member> members
+deactivate H2ORepository
+
+alt 회원이 1명인 경우
+    H2OService -> H2OService: 회원 정보 업데이트
+    note right: CMS에서 전송된 정보로\n회원 정보 업데이트
+    
+    H2OService -> H2ORepository: updateMember(memberId, cmsData)
+    activate H2ORepository
+    H2ORepository -> Database: UPDATE members\nSET member_name = ?, member_email = ?,\nmember_gender = ?, member_birth = ?,\ncms_profile_id = ?\nWHERE id = ?
+    Database --> H2ORepository: 업데이트 완료
+    H2ORepository --> H2OService: boolean updated
+    deactivate H2ORepository
+    
+    H2OService -> H2OService: 약관 동의 정보 업데이트
+    H2OService -> H2ORepository: updateTermsAgreement(memberId, termInfos)
+    activate H2ORepository
+    H2ORepository -> Database: UPDATE terms_agreement\nSET agree_yn = ?, version = ?\nWHERE member_id = ? AND term_info_id = ?
+    Database --> H2ORepository: 약관 업데이트 완료
+    H2ORepository --> H2OService: boolean termsUpdated
+    deactivate H2ORepository
+    
+    H2OService -> H2OService: CMS 동기화 완료 처리
+    H2OService --> H2OController: SyncResponse(success)
+    
+else 회원이 2명 이상인 경우
+    H2OService -> H2OService: 중복 회원 오류 처리
+    H2OService --> H2OController: ErrorResponse(중복 회원)
+    H2OController --> CMS: HTTP 400\nBad Request\nresultCode: ERR109\nmsg: 동일한 이름과 전화번호의 회원이 2명 이상 존재합니다
+    deactivate H2OController
+    deactivate H2OService
+    
+else 회원이 없는 경우
+    H2OService -> H2OService: 회원 없음 오류 처리
+    H2OService --> H2OController: ErrorResponse(회원 없음)
+    H2OController --> CMS: HTTP 404\nNot Found\nresultCode: ERR102\nmsg: 해당 정보로 가입된 회원을 찾을 수 없습니다
+    deactivate H2OController
+    deactivate H2OService
+end
+
+deactivate H2OService
+
+H2OController -> H2OController: 응답 데이터 구성
+note right: resultCode: 1000\nmsg: Success\ndata: null
+
+H2OController --> CMS: HTTP 200 OK\n회원 정보 동기화 완료 응답
+deactivate H2OController
+
+== 에러 처리 ==
+
+alt 파라미터 검증 실패
+    H2OController -> H2OController: 파라미터 검증 실패 처리
+    H2OController --> CMS: HTTP 400\nBad Request\nresultCode: ERR001\nmsg: 필수 파라미터가 누락되었습니다
+end
+
+alt 데이터베이스 오류
+    H2OService -> H2OService: 데이터베이스 오류 처리
+    H2OService --> H2OController: ErrorResponse
+    H2OController --> CMS: HTTP 500\nInternal Server Error\nresultCode: ERR999\nmsg: 시스템 오류가 발생했습니다
+end
+
+@enduml 

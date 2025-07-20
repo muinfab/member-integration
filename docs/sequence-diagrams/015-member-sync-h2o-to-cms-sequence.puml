@@ -1,0 +1,24 @@
+@startuml 015-member-sync-h2o-to-cms-sequence
+!theme plain
+title 회원 정보 동기화 API 시퀀스 다이어그램 (IDMI-REWARDS-015)
+
+participant "H2O Service" as H2OService
+participant "H2O Client" as H2OClient
+participant "CMS\n(외부 CMS 서버)" as CMS
+
+== 회원 정보 동기화 (H2O > CMS) ==
+
+H2OService -> H2OClient: syncMemberToCMS(memberData)
+activate H2OClient
+note right: H2O 서비스에서 Client 함수 호출\n회원 정보 동기화 요청
+
+H2OClient -> CMS: POST http://cms-dev.com/v1/cms/m2-3087/m3-w6200/IF_MI_REWARDS_015
+note right: H2O Client → 외부 CMS 서버\n회원 정보 동기화 요청\nmemberType, membershipNo, membershipId\nwebMemberId, cmsProfileId, memberName\nmemberFirstName, memberMiddleName, memberLastName\nmemberMobile, memberEmail, memberGender\nmemberBirth, memberCi, memberStatus\njoinDate, withdrawlYn, withdrawlDate\ntermInfos 등
+
+CMS --> H2OClient: 응답
+note right: resultCode: 200\nmsg: Success\ndata: null
+
+H2OClient --> H2OService: CmsResponse(resultCode, msg)
+deactivate H2OClient
+
+@enduml 
