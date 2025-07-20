@@ -157,7 +157,7 @@ resultCode: "1000"
 msg: "Success"
 data:
   memberType: "R"
-  integrationType: "T"
+  integrationType: "U"
   loginId: "axlrose"
   rewardsMembershipNo: "PM00004020"
   rewardsMembershipId: "axlrose"
@@ -170,7 +170,7 @@ resultCode: "1000"
 msg: "Success"
 data:
   memberType: "U"
-  integrationType: "U"
+  integrationType: "N"
   loginId: "axlrose"
   webInfoId: 200
   webMemberId: "test@gmail.com"
@@ -226,17 +226,18 @@ note over Client, History
 2. **리워즈회원 (R)**
    - loginId가 일반 아이디 형식
    - rewardsMembershipId = loginId
-   - integrationType = "T" (전환대상)
+   - integrationType = "U" (통합대상)
    - **비밀번호 필수** (일반 로그인)
 
 3. **통합회원 (U)**
    - 이미 통합된 회원
-   - integrationType = "U" (통합대상)
+   - integrationType = "N" (미대상)
    - 웹/리워즈 정보 모두 포함
    - **비밀번호 필수** (일반 로그인)
 
 **비즈니스 로직:**
-- 웹회원/리워즈회원 로그인 시 → 리워즈 가입 유도
+- 웹회원 로그인 시 → 리워즈 가입 유도
+- 리워즈회원 로그인 시 → 통합 가입 유도
 - 통합회원 로그인 시 → 정상 서비스 이용
 - **모든 회원 유형에서 일반 로그인 시 비밀번호 필수**
 end note
