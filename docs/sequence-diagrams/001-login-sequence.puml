@@ -17,7 +17,7 @@ participant "LoginHistory" as History
 
 == 로그인 요청 처리 ==
 
-note over Client: **요청 파라미터**\n\n**일반 로그인:**\nloginType: 00\nloginId: "userid"\nloginPw: "password123"\n\n**간편 로그인:**\nloginType: 1\nchannelId: "43252323"\nmemberCi: "ySiSkQvaSj0ifo3ytt760s38dAHM..."\n\n**회원 유형별 요청:**\n• 웹회원: webMemberId (이메일) + password\n• 리워즈회원: rewardsMembershipId + password
+note over Client: **요청 파라미터**\n\n**일반 로그인:**\nloginType: 0\nloginId: "userid"\nloginPw: "password123"\n\n**간편 로그인:**\nloginType: 1\nchannelId: "43252323"\nmemberCi: "ySiSkQvaSj0ifo3ytt760s38dAHM..."\n\n**회원 유형별 요청:**\n• 웹회원: webMemberId (이메일) + password\n• 리워즈회원: rewardsMembershipId + password
 
 Client -> Controller: POST /v1/membership/integration/login\n(LoginRequest)
 activate Controller
@@ -84,7 +84,7 @@ Member --> Service: true
 deactivate Member
 
 == 4. 비밀번호 검증 (일반 로그인만) ==
-alt request.loginType == 00 (일반 로그인)
+alt request.loginType == 0 (일반 로그인)
     Service -> Member: password.matches(request.loginPw)
     activate Member
     
@@ -141,7 +141,7 @@ note over Client, History
 
 **웹회원 응답:**
 resultCode: "1000"
-mesg: "Success"
+msg: "Success"
 data:
   memberType: "W"
   integrationType: "T"
@@ -154,7 +154,7 @@ data:
 
 **리워즈회원 응답:**
 resultCode: "1000"
-mesg: "Success"
+msg: "Success"
 data:
   memberType: "R"
   integrationType: "T"
@@ -167,7 +167,7 @@ data:
 
 **통합회원 응답:**
 resultCode: "1000"
-mesg: "Success"
+msg: "Success"
 data:
   memberType: "U"
   integrationType: "U"
@@ -247,7 +247,7 @@ note over Client, History
 
 **공통 필드:**
 - resultCode: 결과 코드 (1000: 성공, ERR001~ERR503: 에러)
-- mesg: 응답 메시지 ("Success" 또는 에러 메시지)
+- msg: 응답 메시지 ("Success" 또는 에러 메시지)
 - data: 결과 데이터 객체
 
 **회원 정보 필드 (data 내부):**
