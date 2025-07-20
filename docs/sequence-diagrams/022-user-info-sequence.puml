@@ -1,0 +1,55 @@
+@startuml 022-user-info-sequence
+!theme plain
+title 회원 정보 조회 API 시퀀스 다이어그램 (IDMI-REWARDS-022)
+
+participant "Client" as Client
+participant "H2O Controller" as Controller
+participant "H2O Service" as Service
+participant "H2O Repository" as Repository
+participant "Database" as DB
+
+== 회원 정보 조회 ==
+
+Client -> Controller: GET /v1/membership/integration/user?loginId=test
+note right: 회원 정보 조회 요청
+
+Controller -> Service: getUser(loginId)
+activate Service
+note right: 회원 정보 조회 요청
+
+Service -> Repository: findByLoginId(loginId)
+activate Repository
+note right: 로그인 ID로 회원 정보 조회
+
+Repository -> DB: SELECT * FROM member\nWHERE login_id = ? OR membership_id = ? OR web_member_id = ?
+activate DB
+
+alt 회원 정보 존재
+    DB --> Repository: 회원 정보 반환
+    Repository --> Service: Member 객체
+    deactivate Repository
+    
+    Service -> Service: 회원 정보 매핑 및 가공
+    note right: memberType, integrationType 결정\n가입일자 설정 (웹회원/통합회원 구분)
+    
+    Service --> Controller: UserResponse(resultCode: 1000, msg: Success, memberInfo)
+    deactivate Service
+    
+    Controller --> Client: 200 OK
+    note right: resultCode: 1000\nmsg: Success\ndata: {\n  memberInfo: {\n    memberType: "U",\n    integrationType: "U",\n    webInfoId: 200,\n    membershipNo: "PM00004020",\n    membershipId: "axlrose",\n    webMemberId: "test@gmail.com",\n    cmsProfileId: 1231231,\n    memberName: "홍길동",\n    memberFirstName: "Gildong",\n    memberMiddleName: "Heo",\n    memberLastName: "Hong",\n    memberMobile: "01098765432",\n    memberEmail: "test@gmail.com",\n    memberGender: 0,\n    memberBirth: "19990101",\n    memberJoinDate: "19990101",\n    employeeStatus: "N"\n  }\n}
+    
+else 회원 정보 없음
+    DB --> Repository: null
+    Repository --> Service: null
+    deactivate Repository
+    
+    Service --> Controller: UserResponse(resultCode: 1000, msg: Success, memberInfo: null)
+    deactivate Service
+    
+    Controller --> Client: 200 OK
+    note right: resultCode: 1000\nmsg: Success\ndata: {\n  memberInfo: null\n}
+end
+
+deactivate DB
+
+@enduml 

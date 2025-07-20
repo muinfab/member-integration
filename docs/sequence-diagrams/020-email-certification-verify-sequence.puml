@@ -1,0 +1,73 @@
+@startuml 020-email-certification-verify-sequence
+!theme plain
+title 이메일 인증 번호 확인 API 시퀀스 다이어그램 (IDMI-REWARDS-020)
+
+participant "Client" as Client
+participant "H2O Controller" as Controller
+participant "H2O Service" as Service
+participant "H2O Repository" as Repository
+participant "Database" as DB
+
+== 이메일 인증 번호 확인 (외국인 전용) ==
+
+Client -> Controller: POST /v1/membership/integration/email/certification
+note right: email: test@gmail.com\ncertificationKey: 123456
+
+Controller -> Service: verifyEmailCertification(request)
+activate Service
+note right: 이메일 인증 번호 확인 요청
+
+Service -> Repository: findByEmailAndCertificationKey(email, certificationKey)
+activate Repository
+note right: 이메일과 인증번호로 인증 정보 조회
+
+Repository -> DB: SELECT * FROM email_certification\nWHERE email = ? AND certification_key = ?
+activate DB
+
+alt 인증 정보 존재
+    DB --> Repository: 인증 정보 반환
+    Repository --> Service: EmailCertification 객체
+    deactivate Repository
+    
+    Service -> Service: 인증 성공 처리
+    note right: 인증 상태 업데이트\n만료 시간 체크
+    
+    Service -> Repository: updateCertificationStatus(email, certificationKey, 'VERIFIED')
+    activate Repository
+    Repository -> DB: UPDATE email_certification\nSET status = 'VERIFIED', verified_at = NOW()\nWHERE email = ? AND certification_key = ?
+    DB --> Repository: 업데이트 완료
+    Repository --> Service: 업데이트 성공
+    deactivate Repository
+    
+    Service --> Controller: EmailCertificationResponse(resultCode: 1000, msg: Success, rejectYn: Y)
+    deactivate Service
+    
+    Controller --> Client: 200 OK
+    note right: resultCode: 1000\nmsg: Success\ndata: {}\nrejectYn: Y (인증 성공)
+    
+else 인증 정보 없음
+    DB --> Repository: null
+    Repository --> Service: null
+    deactivate Repository
+    
+    Service --> Controller: EmailCertificationResponse(resultCode: 1000, msg: Success, rejectYn: N)
+    deactivate Service
+    
+    Controller --> Client: 200 OK
+    note right: resultCode: 1000\nmsg: Success\ndata: {}\nrejectYn: N (인증 실패)
+    
+else 인증번호 만료
+    DB --> Repository: 만료된 인증 정보
+    Repository --> Service: 만료된 EmailCertification 객체
+    deactivate Repository
+    
+    Service --> Controller: EmailCertificationResponse(resultCode: 1000, msg: Success, rejectYn: N)
+    deactivate Service
+    
+    Controller --> Client: 200 OK
+    note right: resultCode: 1000\nmsg: Success\ndata: {}\nrejectYn: N (인증 실패 - 만료)
+end
+
+deactivate DB
+
+@enduml 

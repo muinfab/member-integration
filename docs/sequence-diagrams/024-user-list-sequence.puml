@@ -1,0 +1,70 @@
+@startuml 024-user-list-sequence
+!theme plain
+title 회원관리 목록 조회 API 시퀀스 다이어그램 (IDMI-REWARDS-024)
+
+participant "Client" as Client
+participant "H2O Controller" as Controller
+participant "H2O Service" as Service
+participant "H2O Repository" as Repository
+participant "Database" as DB
+
+== 회원관리 목록 조회 ==
+
+Client -> Controller: GET /v1/membership/integration/user/list?keyword=홍길동&fields=name,mobile,email&pageNo=1&limit=20
+note right: 회원관리 목록 조회 요청\n이름: 두 자 이상 부분 일치\n휴대폰, 이메일: 정확히 일치
+
+Controller -> Service: getUserList(keyword, fields, pageNo, limit)
+activate Service
+note right: 회원 목록 조회 요청
+
+Service -> Service: 검색 조건 파싱 및 검증
+note right: keyword 검증\nfields 파싱 (name, mobile, email)\n페이지네이션 검증 (pageNo, limit)
+
+Service -> Repository: findMembersBySearchCriteria(keyword, fields, pageNo, limit)
+activate Repository
+note right: 검색 조건으로 회원 목록 조회
+
+Repository -> DB: SELECT * FROM member\nWHERE (\n  CASE\n    WHEN ? LIKE '%name%' THEN member_name LIKE CONCAT('%', ?, '%')\n    WHEN ? LIKE '%mobile%' THEN member_mobile = ?\n    WHEN ? LIKE '%email%' THEN member_email = ?\n  END\n)\nORDER BY created_at DESC\nLIMIT ? OFFSET ?
+activate DB
+note right: 검색 조건에 따른 동적 쿼리\n이름: 부분 일치\n휴대폰/이메일: 정확 일치\n페이지네이션 적용
+
+alt 검색 결과 존재
+    DB --> Repository: 회원 목록 반환
+    Repository --> Service: List<Member> 객체들
+    deactivate Repository
+    
+    Service -> Repository: getTotalCount(keyword, fields)
+    activate Repository
+    note right: 전체 검색 결과 수 조회
+    
+    Repository -> DB: SELECT COUNT(*) FROM member\nWHERE (\n  CASE\n    WHEN ? LIKE '%name%' THEN member_name LIKE CONCAT('%', ?, '%')\n    WHEN ? LIKE '%mobile%' THEN member_mobile = ?\n    WHEN ? LIKE '%email%' THEN member_email = ?\n  END\n)
+    activate DB
+    DB --> Repository: 전체 개수 반환
+    Repository --> Service: totalCount
+    deactivate Repository
+    deactivate DB
+    
+    Service -> Service: 회원 정보 매핑 및 가공
+    note right: memberType, integrationType 결정\n가입일자 설정\n페이지네이션 정보 계산
+    
+    Service --> Controller: UserListResponse(resultCode: 1000, msg: Success, memberInfo, pagination)
+    deactivate Service
+    
+    Controller --> Client: 200 OK
+    note right: resultCode: 1000\nmsg: Success\ndata: {\n  memberInfo: [{\n    memberType: "U",\n    integrationType: "UU",\n    webInfoId: 200,\n    membershipNo: "PM00004020",\n    membershipId: "axlrose",\n    webMemberId: "test@gmail.com",\n    cmsProfileId: 1231231,\n    memberName: "홍길동",\n    memberFirstName: "Gildong",\n    memberMiddleName: "Heo",\n    memberLastName: "Hong",\n    memberMobile: "01098765432",\n    memberEmail: "test@gmail.com",\n    memberGender: 0,\n    memberBirth: "19990101",\n    memberJoinDate: "19990101",\n    employeeStatus: "N"\n  }],\n  pagination: {\n    pageNo: 1,\n    limit: 20,\n    totalCount: 150,\n    totalPages: 8\n  }\n}
+    
+else 검색 결과 없음
+    DB --> Repository: 빈 결과
+    Repository --> Service: 빈 List
+    deactivate Repository
+    
+    Service --> Controller: UserListResponse(resultCode: 1000, msg: Success, memberInfo: [], pagination)
+    deactivate Service
+    
+    Controller --> Client: 200 OK
+    note right: resultCode: 1000\nmsg: Success\ndata: {\n  memberInfo: [],\n  pagination: {\n    pageNo: 1,\n    limit: 20,\n    totalCount: 0,\n    totalPages: 0\n  }\n}
+end
+
+deactivate DB
+
+@enduml 

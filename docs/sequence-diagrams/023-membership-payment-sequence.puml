@@ -1,0 +1,89 @@
+@startuml 023-membership-payment-sequence
+!theme plain
+title 멤버십 가입 API 시퀀스 다이어그램 (IDMI-REWARDS-023)
+
+participant "Client" as Client
+participant "H2O Controller" as Controller
+participant "H2O Service" as Service
+participant "H2O Repository" as Repository
+participant "Database" as DB
+
+== 멤버십 가입 (추가 구매 등록) ==
+
+Client -> Controller: POST /v1/membership/integration/payment
+note right: memberType: U\nloginId: axlose\nextraMembershipInfo: {\n  extraMembershipType: "G",\n  paymentBillNo: "3858812923",\n  paymentAmount: 1000000,\n  paymentDate: "20250226235959"\n}\ntermInfos: [{\n  termInfoId: "TOS",\n  agreeYn: "Y",\n  version: 4,\n  title: "이용약관",\n  agreeDate: "20250101235959"\n}]
+
+Controller -> Service: registerMembership(request)
+activate Service
+note right: 멤버십 가입 요청
+
+Service -> Repository: findByLoginId(loginId)
+activate Repository
+note right: 기존 회원 정보 조회
+
+Repository -> DB: SELECT * FROM member\nWHERE login_id = ? OR membership_id = ? OR web_member_id = ?
+activate DB
+
+alt 회원 정보 존재
+    DB --> Repository: 회원 정보 반환
+    Repository --> Service: Member 객체
+    deactivate Repository
+    
+    Service -> Service: 멤버십 정보 검증
+    note right: 멤버십 유형 검증 (G, P, L)\n결제 정보 검증\n약관 동의 검증
+    
+    Service -> Repository: saveMembershipPayment(membershipPayment)
+    activate Repository
+    note right: 멤버십 결제 정보 저장
+    
+    Repository -> DB: INSERT INTO membership_payment\n(member_id, membership_type, payment_bill_no,\npayment_amount, payment_date, created_at)\nVALUES (?, ?, ?, ?, ?, NOW())
+    activate DB
+    DB --> Repository: 저장 완료
+    Repository --> Service: MembershipPayment 객체
+    deactivate Repository
+    deactivate DB
+    
+    Service -> Repository: saveTermsAgreement(termsAgreement)
+    activate Repository
+    note right: 약관 동의 정보 저장
+    
+    Repository -> DB: INSERT INTO terms_agreement\n(member_id, term_info_id, agree_yn, version,\ntitle, agree_date, created_at)\nVALUES (?, ?, ?, ?, ?, ?, NOW())
+    activate DB
+    DB --> Repository: 저장 완료
+    Repository --> Service: TermsAgreement 객체
+    deactivate Repository
+    deactivate DB
+    
+    Service -> Service: 멤버십 등급 업데이트
+    note right: 회원의 멤버십 등급을\n새로 구매한 등급으로 업데이트
+    
+    Service -> Repository: updateMemberMembershipType(memberId, membershipType)
+    activate Repository
+    Repository -> DB: UPDATE member\nSET membership_type = ?\nWHERE id = ?
+    activate DB
+    DB --> Repository: 업데이트 완료
+    Repository --> Service: 업데이트 성공
+    deactivate Repository
+    deactivate DB
+    
+    Service --> Controller: MembershipPaymentResponse(resultCode: 1000, msg: Success)
+    deactivate Service
+    
+    Controller --> Client: 200 OK
+    note right: resultCode: 1000\nmsg: Success\ndata: null
+    
+else 회원 정보 없음
+    DB --> Repository: null
+    Repository --> Service: null
+    deactivate Repository
+    
+    Service --> Controller: MembershipPaymentResponse(resultCode: ERR001, msg: 회원 정보를 찾을 수 없습니다)
+    deactivate Service
+    
+    Controller --> Client: 400 Bad Request
+    note right: resultCode: ERR001\nmsg: 회원 정보를 찾을 수 없습니다
+end
+
+deactivate DB
+
+@enduml 

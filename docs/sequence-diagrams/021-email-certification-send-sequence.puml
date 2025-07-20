@@ -1,0 +1,81 @@
+@startuml 021-email-certification-send-sequence
+!theme plain
+title 이메일 인증 번호 발송 API 시퀀스 다이어그램 (IDMI-REWARDS-021)
+
+participant "Client" as Client
+participant "H2O Controller" as Controller
+participant "H2O Service" as Service
+participant "H2O Repository" as Repository
+participant "Email Service" as EmailService
+participant "Database" as DB
+
+== 이메일 인증 번호 발송 (외국인 전용) ==
+
+Client -> Controller: GET /v1/membership/integration/email/certification?email=test@gmail.com
+note right: 이메일 인증번호 발송 요청
+
+Controller -> Service: sendEmailCertification(email)
+activate Service
+note right: 이메일 인증번호 발송 요청
+
+Service -> Service: 인증번호 생성 (6자리 랜덤 숫자)
+note right: 123456
+
+Service -> Repository: findByEmail(email)
+activate Repository
+note right: 기존 인증 정보 조회
+
+Repository -> DB: SELECT * FROM email_certification\nWHERE email = ?
+activate DB
+
+alt 기존 인증 정보 존재
+    DB --> Repository: 기존 인증 정보
+    Repository --> Service: 기존 EmailCertification 객체
+    deactivate Repository
+    
+    Service -> Service: 기존 인증번호 무효화
+    note right: 기존 인증번호 상태를 'EXPIRED'로 변경
+    
+    Service -> Repository: updateCertificationStatus(email, oldKey, 'EXPIRED')
+    activate Repository
+    Repository -> DB: UPDATE email_certification\nSET status = 'EXPIRED'\nWHERE email = ?
+    DB --> Repository: 업데이트 완료
+    Repository --> Service: 업데이트 성공
+    deactivate Repository
+    
+else 기존 인증 정보 없음
+    DB --> Repository: null
+    Repository --> Service: null
+    deactivate Repository
+end
+
+deactivate DB
+
+Service -> Repository: saveEmailCertification(email, certificationKey)
+activate Repository
+note right: 새로운 인증 정보 저장
+
+Repository -> DB: INSERT INTO email_certification\n(email, certification_key, status, created_at, expires_at)\nVALUES (?, ?, 'PENDING', NOW(), DATE_ADD(NOW(), INTERVAL 30 MINUTE))
+activate DB
+DB --> Repository: 저장 완료
+Repository --> Service: EmailCertification 객체
+deactivate Repository
+deactivate DB
+
+Service -> EmailService: sendCertificationEmail(email, certificationKey)
+activate EmailService
+note right: 이메일 발송 서비스 호출\n인증번호를 포함한 이메일 발송
+
+EmailService -> EmailService: 이메일 템플릿 생성
+note right: 인증번호: 123456\n만료시간: 30분
+
+EmailService --> Service: 이메일 발송 완료
+deactivate EmailService
+
+Service --> Controller: EmailCertificationResponse(resultCode: 1000, msg: Success, data: null)
+deactivate Service
+
+Controller --> Client: 200 OK
+note right: resultCode: 1000\nmsg: Success\ndata: null
+
+@enduml 
