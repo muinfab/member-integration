@@ -1,0 +1,103 @@
+@startuml 008-update-sequence
+!theme plain
+title 회원 정보 수정 API 시퀀스 다이어그램 (IDMI-REWARDS-008)
+
+actor Client as "클라이언트"
+participant Controller as "MembershipController"
+participant Service as "MembershipService"
+participant Repository as "MemberRepository"
+participant TermsRepository as "TermsRepository"
+database Database as "Database"
+
+== 회원 정보 수정 요청 ==
+
+Client -> Controller: PUT /v1/membership/integration/update
+activate Controller
+
+note right of Client: memberType: U\nmembershipUserInfoId: 200\nmembershipNo: PM00004020\nmembershipId: axlrose\nwebMemberId: axlrose\nmemberName: 홍길동\nmemberFirstName: Gildong\nmemberMobile: 01098765432\nmemberEmail: test@gmail.com\nmemberBirth: 19990101\nzipCode: 12535\naddress1: 서울시 강남구 논현동\naddress2: 101호\ntermInfos: [...]
+
+Controller -> Controller: 요청 파라미터 검증
+note right: - memberType (필수)\n- memberName (필수)\n- memberMobile (필수)\n- memberEmail (필수)\n- memberBirth (필수)\n- 이메일/휴대폰 형식 검증
+
+Controller -> Service: updateMember(updateRequest)
+activate Service
+
+Service -> Service: 회원 정보 조회
+Service -> Repository: findById(membershipUserInfoId)
+activate Repository
+Repository -> Database: SELECT * FROM members\nWHERE id = ?
+Database --> Repository: 회원 정보
+Repository --> Service: Member existingMember
+deactivate Repository
+
+alt 회원 정보 없음
+    Service --> Controller: ErrorResponse(회원 정보 없음)
+    Controller --> Client: HTTP 404\n회원 정보 없음
+    deactivate Controller
+    deactivate Service
+end
+
+Service -> Service: 이메일 중복 체크 (변경된 경우)
+alt 이메일이 변경된 경우
+    Service -> Repository: existsByMemberEmailAndNotId(memberEmail, membershipUserInfoId)
+    activate Repository
+    Repository -> Database: SELECT COUNT(*) FROM members\nWHERE member_email = ?\nAND id != ?
+    Database --> Repository: 중복 여부
+    Repository --> Service: boolean isEmailDuplicate
+    deactivate Repository
+    
+    alt 이메일 중복
+        Service --> Controller: ErrorResponse(이메일 중복)
+        Controller --> Client: HTTP 400\n이메일 중복 오류
+        deactivate Controller
+        deactivate Service
+    end
+end
+
+Service -> Service: 회원 정보 업데이트
+note right: - 기본 정보 업데이트\n- 주소 정보 업데이트\n- 수정일자 설정
+
+Service -> Repository: updateMember(member)
+activate Repository
+Repository -> Database: UPDATE members\nSET member_name = ?,\nmember_first_name = ?,\nmember_mobile = ?,\nmember_email = ?,\nmember_birth = ?,\nmember_zip_code = ?,\nmember_address1 = ?,\nmember_address2 = ?,\nupdate_date = NOW()\nWHERE id = ?
+Database --> Repository: 업데이트 결과
+Repository --> Service: Member updatedMember
+deactivate Repository
+
+Service -> Service: 약관 동의 정보 업데이트
+Service -> TermsRepository: updateTermsAgreement(membershipUserInfoId, termInfos)
+activate TermsRepository
+TermsRepository -> Database: DELETE FROM terms_agreement\nWHERE member_id = ?
+Database --> TermsRepository: 기존 약관 삭제
+
+TermsRepository -> Database: INSERT INTO terms_agreement\n(member_id, term_info_id, agree_yn, ...)\nVALUES (?, ?, ?, ...)
+Database --> TermsRepository: 새 약관 동의 저장
+TermsRepository --> Service: TermsAgreement updated
+deactivate TermsRepository
+
+Service -> Service: 수정 완료 처리
+note right: - 수정 이력 기록\n- 관련 시스템 동기화
+
+Service --> Controller: UpdateResponse(success=true)
+deactivate Service
+
+Controller -> Controller: 응답 데이터 구성
+note right: resultCode: 1000\nmsg: Success\ndata: null
+
+Controller --> Client: HTTP 200 OK\n회원 정보 수정 완료 응답
+deactivate Controller
+
+== 에러 처리 ==
+
+alt 파라미터 검증 실패
+    Controller -> Controller: 파라미터 검증 실패 처리
+    Controller --> Client: HTTP 400\nBad Request
+end
+
+alt 데이터베이스 오류
+    Service -> Service: 데이터베이스 오류 처리
+    Service --> Controller: ErrorResponse
+    Controller --> Client: HTTP 500\nInternal Server Error
+end
+
+@enduml 
