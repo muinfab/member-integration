@@ -143,43 +143,55 @@ note over Client, History
 resultCode: "1000"
 msg: "Success"
 data:
-  memberType: "W"
-  integrationType: "T"
-  loginId: "test@gmail.com"
-  webInfoId: 200
-  webMemberId: "test@gmail.com"
-  memberName: "홍길동"
-  memberEmail: "test@gmail.com"
-  memberMobile: "01098765432"
+  memberInfo:
+    memberType: "W"
+    integrationType: "T"
+    loginId: "test@gmail.com"
+    webInfoId: 200
+    webMemberId: "test@gmail.com"
+    memberName: "홍길동"
+    memberEmail: "test@gmail.com"
+    memberMobile: "01098765432"
+    memberGender: 00
+    memberBirth: "19990101"
+    employeeStatus: "N"
 
 **리워즈회원 응답:**
 resultCode: "1000"
 msg: "Success"
 data:
-  memberType: "R"
-  integrationType: "U"
-  loginId: "axlrose"
-  rewardsMembershipNo: "PM00004020"
-  rewardsMembershipId: "axlrose"
-  memberName: "홍길동"
-  memberEmail: "test@gmail.com"
-  memberMobile: "01098765432"
+  memberInfo:
+    memberType: "R"
+    integrationType: "U"
+    loginId: "axlrose"
+    rewardsMembershipNo: "PM00004020"
+    rewardsMembershipId: "axlrose"
+    memberName: "홍길동"
+    memberEmail: "test@gmail.com"
+    memberMobile: "01098765432"
+    memberGender: 00
+    memberBirth: "19990101"
+    employeeStatus: "N"
 
 **통합회원 응답:**
 resultCode: "1000"
 msg: "Success"
 data:
-  memberType: "U"
-  integrationType: "N"
-  loginId: "axlrose"
-  webInfoId: 200
-  webMemberId: "test@gmail.com"
-  rewardsMembershipNo: "PM00004020"
-  rewardsMembershipId: "axlrose"
-  cmsProfileId: "1231231"
-  memberName: "홍길동"
-  memberEmail: "test@gmail.com"
-  memberMobile: "01098765432"
+  memberInfo:
+    memberType: "U"
+    integrationType: "N"
+    loginId: "axlrose"
+    webInfoId: 200
+    webMemberId: "test@gmail.com"
+    rewardsMembershipNo: "PM00004020"
+    rewardsMembershipId: "axlrose"
+    cmsProfileId: "1231231"
+    memberName: "홍길동"
+    memberEmail: "test@gmail.com"
+    memberMobile: "01098765432"
+    memberGender: 00
+    memberBirth: "19990101"
+    employeeStatus: "N"
 end note
 
 == 에러 코드 매핑 ==

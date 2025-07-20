@@ -1,0 +1,250 @@
+@startuml 회원 통합 API 시퀀스 다이어그램
+
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 20
+skinparam maxmessagesize 60
+
+title **회원 통합 API 시퀀스 다이어그램** (IDMI-REWARDS-002)
+
+actor "클라이언트\n(User/IWS, The Parnas)" as Client
+participant "MembershipController" as Controller
+participant "MembershipService" as Service
+participant "MemberRepository" as Repository
+participant "Member\n(Domain)" as Member
+participant "TermsAgreement" as Terms
+
+== 회원 통합 요청 처리 ==
+
+note over Client: **요청 파라미터**\n\nrewardsMembershipId: "axlrose"\nwebMemberId: "test@gmail.com"\nunifiedId: "axlrose"\nunifiedPw: "password123"\ntermInfos: [약관 동의 정보]\n\n**통합 대상:**\n• 웹회원 (W) + 리워즈회원 (R) → 통합회원 (U)\n• 기존 회원 정보 유지하면서 통합
+
+Client -> Controller: POST /v1/membership/integration/register\n(RegisterRequest)
+activate Controller
+
+== 1. 입력값 검증 (Controller) ==
+Controller -> Controller: validateRegisterRequest(request)
+note right: **Controller에서 검증:**\n1. rewardsMembershipId 필수 여부 확인 (ERR001)\n2. webMemberId 필수 여부 확인 (ERR001)\n3. unifiedId 필수 여부 확인 (ERR001)\n4. unifiedPw 필수 여부 확인 (ERR001)\n5. 약관 동의 필수 여부 확인 (ERR001)
+
+alt 입력값 검증 실패
+    Controller --> Client: ErrorResponse(400, "ERR001", "필수 데이터가 없습니다.")
+    deactivate Controller
+end
+
+Controller -> Service: register(RegisterRequest request)
+activate Service
+
+== 2. 기존 회원 정보 조회 ==
+Service -> Repository: findByRewardsMembershipId(request.rewardsMembershipId)
+activate Repository
+
+Repository -> Repository: SELECT * FROM members WHERE rewards_membership_id = ?
+Repository --> Service: Optional<Member> rewardsMember
+
+alt 리워즈회원이 존재하지 않는 경우
+    Service --> Controller: ErrorResponse(404, "ERR201", "리워즈 회원 정보가 없습니다.")
+    Controller --> Client: 404 Not Found
+    deactivate Repository
+    deactivate Service
+    deactivate Controller
+end
+
+Repository --> Service: rewardsMember
+deactivate Repository
+
+Service -> Repository: findByWebMemberId(request.webMemberId)
+activate Repository
+
+Repository -> Repository: SELECT * FROM members WHERE web_member_id = ?
+Repository --> Service: Optional<Member> webMember
+
+alt 웹회원이 존재하지 않는 경우
+    Service --> Controller: ErrorResponse(404, "ERR202", "웹 회원 정보가 없습니다.")
+    Controller --> Client: 404 Not Found
+    deactivate Repository
+    deactivate Service
+    deactivate Controller
+end
+
+Repository --> Service: webMember
+deactivate Repository
+
+== 3. 통합 아이디 중복 체크 ==
+Service -> Repository: findByLoginId(request.unifiedId)
+activate Repository
+
+Repository -> Repository: SELECT * FROM members WHERE login_id = ?
+Repository --> Service: Optional<Member> existingMember
+
+alt 통합 아이디가 이미 존재하는 경우
+    Service --> Controller: ErrorResponse(409, "ERR203", "이미 사용 중인 아이디입니다.")
+    Controller --> Client: 409 Conflict
+    deactivate Repository
+    deactivate Service
+    deactivate Controller
+end
+
+Repository --> Service: null
+deactivate Repository
+
+== 4. 회원 상태 확인 ==
+Service -> Member: canIntegrate()
+activate Member
+
+Member -> Member: checkMemberStatus()
+note right: 1. 회원 상태 확인 (ACTIVE, INACTIVE, WITHDRAWN)\n2. 이미 통합된 회원인지 확인\n3. 통합 가능한 상태인지 확인
+
+alt 이미 통합된 회원
+    Member --> Service: false (ALREADY_INTEGRATED)
+    Service --> Controller: ErrorResponse(409, "ERR204", "이미 통합된 회원입니다.")
+    Controller --> Client: 409 Conflict
+    deactivate Member
+    deactivate Service
+    deactivate Controller
+end
+
+alt 통합 불가능한 상태
+    Member --> Service: false (INVALID_STATUS)
+    Service --> Controller: ErrorResponse(400, "ERR205", "통합할 수 없는 회원 상태입니다.")
+    Controller --> Client: 400 Bad Request
+    deactivate Member
+    deactivate Service
+    deactivate Controller
+end
+
+Member --> Service: true
+deactivate Member
+
+== 5. 약관 동의 처리 ==
+Service -> Terms: new TermsAgreement()
+activate Terms
+
+loop request.termInfos
+    Terms -> Terms: setTermInfoId(termInfo.termInfoId)
+    Terms -> Terms: setTermItemInfoId(termInfo.termItemInfoId)
+    Terms -> Terms: setVersion(termInfo.version)
+    Terms -> Terms: setAgreeYn(termInfo.agreeYn)
+    Terms -> Terms: setReceiveTypes(termInfo.receiveTypes)
+    Terms -> Terms: setAgreementTime(NOW())
+end
+
+Service -> Repository: saveTermsAgreement(termsAgreement)
+activate Repository
+Repository -> Repository: INSERT INTO terms_agreement (...)
+Repository --> Service: savedTerms
+deactivate Repository
+
+deactivate Terms
+
+== 6. 회원 통합 처리 ==
+Service -> Service: createIntegratedMember(rewardsMember, webMember, request)
+note right: 1. 리워즈회원과 웹회원 정보 통합\n2. 통합 아이디/비밀번호 설정\n3. memberType을 "U"로 변경\n4. integrationType을 "N"으로 변경\n5. 기존 정보 유지하면서 통합
+
+Service -> Repository: saveIntegratedMember(integratedMember)
+activate Repository
+Repository -> Repository: UPDATE members SET member_type = 'U', integration_type = 'N', login_id = ?, password = ? WHERE id IN (?, ?)
+Repository --> Service: updatedMember
+deactivate Repository
+
+== 7. 응답 생성 ==
+Service -> Service: createRegisterResponse(integratedMember)
+note right: 1. 통합된 회원 정보 매핑\n2. memberType = "U" (통합회원)\n3. 통합된 회원 정보 반환\n4. 응답 데이터 구성
+
+Service --> Controller: RegisterResponse
+deactivate Service
+
+Controller --> Client: 200 OK + RegisterResponse
+deactivate Controller
+
+== 응답 데이터 구조 ==
+note over Client, Terms
+**성공 응답 예시:**
+
+resultCode: "1000"
+msg: "Success"
+data:
+  memberInfo:
+    memberType: "U"
+    integrationType: "N"
+    loginId: "axlrose"
+    rewardsMembershipNo: "PM00004020"
+    rewardsMembershipId: "axlrose"
+    webMemberId: "test@gmail.com"
+    webInfoId: 200
+    cmsProfileId: "1231231"
+    memberName: "홍길동"
+    memberFirstName: "Gildong"
+    memberMiddleName: "Heo"
+    memberLastName: "Hong"
+    memberMobile: "01098765432"
+    memberEmail: "test@gmail.com"
+    memberGender: 00
+    memberBirth: "19990101"
+    memberZipCode: "12535"
+    memberAddress1: "서울시 강남구 논현동"
+    memberAddress2: "101호"
+    memberJoinDate: "20250101"
+    employeeStatus: "N"
+end note
+
+== 에러 코드 매핑 ==
+note over Client, Terms
+**회원 통합 API 관련 에러 코드:**
+
+**입력값 검증 에러:**
+- ERR001: "필수 데이터가 없습니다." (400)
+  - rewardsMembershipId 누락
+  - webMemberId 누락
+  - unifiedId 누락
+  - unifiedPw 누락
+  - 필수 약관 동의 누락
+
+**회원 정보 에러:**
+- ERR201: "리워즈 회원 정보가 없습니다." (404)
+  - 존재하지 않는 리워즈회원
+- ERR202: "웹 회원 정보가 없습니다." (404)
+  - 존재하지 않는 웹회원
+
+**통합 제약 에러:**
+- ERR203: "이미 사용 중인 아이디입니다." (409)
+  - 통합 아이디 중복
+- ERR204: "이미 통합된 회원입니다." (409)
+  - 이미 통합 완료된 회원
+- ERR205: "통합할 수 없는 회원 상태입니다." (400)
+  - 탈퇴/비활성화된 회원
+
+**HTTP 상태 코드:**
+- 200: 성공
+- 400: 잘못된 요청 (입력값 검증 실패, 통합 불가능)
+- 404: 리소스 없음 (회원 정보 없음)
+- 409: 충돌 (아이디 중복, 이미 통합됨)
+- 500: 서버 내부 오류
+end note
+
+== 통합 비즈니스 로직 ==
+note over Client, Terms
+**회원 통합 처리 로직:**
+
+1. **기존 회원 정보 유지**
+   - 리워즈회원 정보: rewardsMembershipNo, rewardsMembershipId
+   - 웹회원 정보: webInfoId, webMemberId
+   - 공통 정보: memberName, memberEmail, memberMobile 등
+
+2. **통합 회원 생성**
+   - memberType: "U" (통합회원)
+   - integrationType: "N" (미대상 - 이미 통합 완료)
+   - loginId: unifiedId (통합 아이디)
+   - password: unifiedPw (통합 비밀번호)
+
+3. **약관 동의 처리**
+   - 필수 약관 동의 검증
+   - 선택 약관 동의 처리
+   - 수신 방법 설정
+
+4. **데이터 무결성**
+   - 기존 회원 정보 보존
+   - 통합 후 중복 데이터 정리
+   - 약관 동의 이력 관리
+end note
+
+@enduml 
