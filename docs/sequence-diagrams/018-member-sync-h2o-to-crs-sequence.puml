@@ -1,0 +1,24 @@
+@startuml 018-member-sync-h2o-to-crs-sequence
+!theme plain
+title 회원 정보 동기화 API 시퀀스 다이어그램 (IDMI-REWARDS-018)
+
+participant "H2O Service" as H2OService
+participant "H2O Client" as H2OClient
+participant "CRS\n(외부 CRS 서버)" as CRS
+
+== 회원 정보 동기화 (H2O > CRS) ==
+
+H2OService -> H2OClient: syncMemberToCRS(memberData)
+activate H2OClient
+note right: H2O 서비스에서 Client 함수 호출\n회원 정보 CRS 동기화 요청
+
+H2OClient -> CRS: POST [CRS 서버 URI]
+note right: H2O Client → 외부 CRS 서버\n회원 정보 동기화 요청\nmemberType, membershipNo, membershipId\nwebMemberId, cmsProfileId, memberName\nmemberFirstName, memberMiddleName, memberLastName\nmemberMobile, memberEmail, memberGender\nmemberBirth, memberCi, memberStatus\njoinDate, withdrawlYn, withdrawlDate
+
+CRS --> H2OClient: 응답
+note right: resultCode: 200\nmsg: Success\ndata: null
+
+H2OClient --> H2OService: CrsResponse(resultCode, msg)
+deactivate H2OClient
+
+@enduml 

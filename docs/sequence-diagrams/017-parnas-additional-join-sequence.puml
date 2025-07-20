@@ -1,0 +1,24 @@
+@startuml 017-parnas-additional-join-sequence
+!theme plain
+title The Parnas 추가 가입 API 시퀀스 다이어그램 (IDMI-REWARDS-017)
+
+participant "H2O Service" as H2OService
+participant "H2O Client" as H2OClient
+participant "CMS\n(외부 CMS 서버)" as CMS
+
+== The Parnas 추가 가입 ==
+
+H2OService -> H2OClient: syncParnasAdditionalMembership(memberData)
+activate H2OClient
+note right: H2O 서비스에서 Client 함수 호출\nThe Parnas 추가 멤버십 정보
+
+H2OClient -> CMS: POST http://cms-dev.com/v1/cms/m2-3087/m3-w6200/IF_MI_REWARDS_017
+note right: H2O Client → 외부 CMS 서버\nThe Parnas 추가 가입 요청\nmemberType, membershipNo, membershipId\nwebMemberId, cmsProfileId\nextraMembershipType, paymentBillNo\npaymentAmount, paymentDate
+
+CMS --> H2OClient: 응답
+note right: resultCode: 200\nmsg: Success\ndata: null
+
+H2OClient --> H2OService: CmsResponse(resultCode, msg)
+deactivate H2OClient
+
+@enduml 
