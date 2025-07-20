@@ -584,7 +584,7 @@
 이 API는 신규 회원 The Parnas 가입 시 회원 정보를 연동합니다.
 
 ### 2. URI
-(URI 정보가 명세에 없습니다. 확인이 필요합니다.)
+http://cms-dev.com/v1/cms/m2-3087/m3-w6200/IF_MI_REWARDS_014
 
 ### 3. 메서드
 `POST`
@@ -643,7 +643,7 @@
 이 API는 H2O에서 CMS로 회원 정보를 동기화하는 기능을 제공합니다.
 
 ### 2. URI
-(URI 정보가 명세에 없습니다. 확인이 필요합니다.)
+http://cms-dev.com/v1/cms/m2-3087/m3-w6200/IF_MI_REWARDS_015
 
 ### 3. 메서드
 `POST`

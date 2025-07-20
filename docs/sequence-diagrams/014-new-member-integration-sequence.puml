@@ -1,68 +1,24 @@
 @startuml 014-new-member-integration-sequence
 !theme plain
-title CMS 동기화 API 시퀀스 다이어그램 (IDMI-REWARDS-014)
+title 신규 회원 정보 연동 API 시퀀스 다이어그램 (IDMI-REWARDS-014)
 
-actor MembershipService as MembershipService
-participant Controller as MembershipController
-participant Service as MembershipService
-participant "CMS Server" as CMSServer
-database Database as Database
+participant "H2O Service" as H2OService
+participant "H2O Client" as H2OClient
+participant "CMS\n(외부 CMS 서버)" as CMS
 
-== CMS 동기화 요청 ==
+== 신규 회원 정보 연동 ==
 
-MembershipService -> Controller: POST /v1/membership/integration/sync
-activate Controller
+H2OService -> H2OClient: syncParnasMemberToCMS(memberData)
+activate H2OClient
+note right: H2O 서비스에서 Client 함수 호출\nThe Parnas 신규 회원 정보
 
-note right of MembershipService: memberType: U\nmembershipNo: PM00004020\nloginId: axlrose\nmemberName: 홍길동\nmemberMobile: 01098765432\nmemberEmail: test@gmail.com\nmemberGender: 0\nmemberBirth: 19990101\njoinDate: 20240308\ntermInfos: [...]
+H2OClient -> CMS: POST http://cms-dev.com/v1/cms/m2-3087/m3-w6200/IF_MI_REWARDS_014
+note right: H2O Client → 외부 CMS 서버\nThe Parnas 신규 회원 정보 연동 요청
 
-Controller -> Controller: 요청 파라미터 검증
-note right: - 회원 정보 검증\n- 동기화 데이터 검증
-
-Controller -> Service: syncMemberToCMS(syncRequest)
-activate Service
-
-Service -> Service: CMS 동기화 데이터 구성
-note right: - 회원 기본 정보\n- 멤버십 정보\n- 약관 동의 정보\n- 가입 일시
-
-Service -> CMSServer: POST /api/members/sync
-activate CMSServer
-note right: 전송 데이터:\n- memberType, membershipNo\n- memberName, memberEmail, memberMobile\n- memberGender, memberBirth, joinDate\n- termInfos (동의한 약관 목록)
-
-CMSServer -> CMSServer: 회원 정보 동기화 처리
-note right: - CMS 시스템에 회원 정보 저장\n- 멤버십 정보 업데이트\n- 약관 동의 정보 기록
-
-alt CMS 동기화 성공
-    CMSServer --> Service: resultCode: 200\nmsg: Success\ndata:\n- cmsProfileId: 1231231\n- cmsMembershipId: G1235533
-    Service -> Service: CMS 동기화 완료 처리
-    Service --> Controller: SyncResponse(cmsProfileId, cmsMembershipId)
-else CMS 동기화 실패
-    CMSServer --> Service: Error Response
-    Service -> Service: CMS 동기화 실패 처리
-    Service --> Controller: ErrorResponse(CMS 동기화 실패)
-    Controller --> MembershipService: HTTP 500\nInternal Server Error\nresultCode: ERR107\nmsg: CMS 동기화에 실패했습니다
-    deactivate Controller
-    deactivate Service
-end
-deactivate CMSServer
-deactivate Service
-
-Controller -> Controller: 응답 데이터 구성
+CMS --> H2OClient: 응답
 note right: resultCode: 200\nmsg: Success\ndata:\n- cmsProfileId: 1231231\n- cmsMembershipId: G1235533
 
-Controller --> MembershipService: HTTP 200 OK\nCMS 동기화 완료 응답
-deactivate Controller
-
-== 에러 처리 ==
-
-alt 파라미터 검증 실패
-    Controller -> Controller: 파라미터 검증 실패 처리
-    Controller --> MembershipService: HTTP 400\nBad Request\nresultCode: ERR001\nmsg: 필수 파라미터가 누락되었습니다
-end
-
-alt CMS 서버 연결 실패
-    Service -> Service: CMS 서버 연결 실패 처리
-    Service --> Controller: ErrorResponse
-    Controller --> MembershipService: HTTP 503\nService Unavailable\nresultCode: ERR108\nmsg: CMS 서버에 연결할 수 없습니다
-end
+H2OClient --> H2OService: CmsResponse(cmsProfileId, cmsMembershipId)
+deactivate H2OClient
 
 @enduml 
