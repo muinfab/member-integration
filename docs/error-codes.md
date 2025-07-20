@@ -6,8 +6,8 @@
 ## 🔗 에러 응답 형식
 ```json
 {
-  "code": "에러코드",
-  "message": "에러 메시지",
+  "resultCode": "에러코드",
+  "mesg": "에러 메시지",
   "data": null
 }
 ```
@@ -88,8 +88,8 @@
 @ExceptionHandler(MissingParameterException.class)
 public ResponseEntity<ErrorResponse> handleMissingParameter(MissingParameterException e) {
     ErrorResponse error = ErrorResponse.builder()
-        .code("ERR001")
-        .message("필수 데이터가 없습니다.")
+        .resultCode("ERR001")
+        .mesg("필수 데이터가 없습니다.")
         .data(null)
         .build();
     

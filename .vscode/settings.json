@@ -1,0 +1,12 @@
+{
+  "plantuml.server": "https://www.plantuml.com/plantuml",
+  "plantuml.render": "PlantUMLServer",
+  "plantuml.exportFormat": "png",
+  "plantuml.exportOutDir": "./docs/images",
+  "plantuml.include": [
+    "docs/sequence-diagrams/*.puml"
+  ],
+  "plantuml.diagramsRoot": "docs/sequence-diagrams",
+  "plantuml.exportFormat": "png",
+  "plantuml.exportOutDir": "docs/images"
+} 

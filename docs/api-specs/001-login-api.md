@@ -46,8 +46,8 @@
 
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
-| **code** | 결과 코드 | string | | Y | 1000 | |
-| **message** | 메시지 | string | | Y | Success | |
+| **resultCode** | 결과 코드 | string | | Y | 1000 | |
+| **mesg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
 | **memberType** | 회원 유형 | string | | Y | WU | WU: 통합회원, R: Rewards, W: Web |
 | **integrationType** | 통합 유형 | string | | Y | UU | UU: 통합대상, T: 전환대상, N: 미대상 |
@@ -72,8 +72,8 @@
 #### 성공 응답 (웹회원)
 ```json
 {
-  "code": "1000",
-  "message": "Success",
+  "resultCode": "1000",
+  "mesg": "Success",
   "data": {
     "memberType": "W",
     "integrationType": "T",
@@ -93,8 +93,8 @@
 #### 성공 응답 (리워즈회원)
 ```json
 {
-  "code": "1000",
-  "message": "Success",
+  "resultCode": "1000",
+  "mesg": "Success",
   "data": {
     "memberType": "R",
     "integrationType": "T",
@@ -114,8 +114,8 @@
 #### 성공 응답 (통합회원)
 ```json
 {
-  "code": "1000",
-  "message": "Success",
+  "resultCode": "1000",
+  "mesg": "Success",
   "data": {
     "memberType": "WU",
     "integrationType": "UU",
@@ -138,8 +138,8 @@
 #### 에러 응답
 ```json
 {
-  "code": "ERR102",
-  "message": "아이디 또는 비밀번호가 틀렸습니다.",
+  "resultCode": "ERR102",
+  "mesg": "아이디 또는 비밀번호가 틀렸습니다.",
   "data": null
 }
 ```

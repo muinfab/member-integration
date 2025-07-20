@@ -140,8 +140,8 @@ note over Client, History
 **성공 응답 예시:**
 
 **웹회원 응답:**
-code: "1000"
-message: "Success"
+resultCode: "1000"
+mesg: "Success"
 data:
   memberType: "W"
   integrationType: "T"
@@ -153,8 +153,8 @@ data:
   memberMobile: "01098765432"
 
 **리워즈회원 응답:**
-code: "1000"
-message: "Success"
+resultCode: "1000"
+mesg: "Success"
 data:
   memberType: "R"
   integrationType: "T"
@@ -166,8 +166,8 @@ data:
   memberMobile: "01098765432"
 
 **통합회원 응답:**
-code: "1000"
-message: "Success"
+resultCode: "1000"
+mesg: "Success"
 data:
   memberType: "WU"
   integrationType: "UU"
@@ -246,8 +246,8 @@ note over Client, History
 **응답 필드 구조 (apispec.txt 기준):**
 
 **공통 필드:**
-- code: 결과 코드 (1000: 성공, ERR001~ERR503: 에러)
-- message: 응답 메시지 ("Success" 또는 에러 메시지)
+- resultCode: 결과 코드 (1000: 성공, ERR001~ERR503: 에러)
+- mesg: 응답 메시지 ("Success" 또는 에러 메시지)
 - data: 결과 데이터 객체
 
 **회원 정보 필드 (data 내부):**
