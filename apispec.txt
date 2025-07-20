@@ -30,23 +30,28 @@
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
 | **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
-| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원, R: Rewards, W: Web |
-| **integrationType** | 통합 유형 | string | | Y | U | U: 통합대상, T: 전환대상, N: 미대상 |
-| **webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원에게만 존재 |
-| **rewardsMembershipNo** | 리워즈 멤버십 No | string | | | PM00004020 | |
-| **rewardsMembershipId** | 리워즈 ID | string | | | test001 | |
-| **loginId** | 통합 아이디 / 웹회원 아이디 | string | | Y | axlrose | 통합이 아닌 경우 웹회원 아이디 |
-| **webMemberId** | 웹회원 아이디 | string | | | test@gmail.com | |
-| **cmsProfileId** | CMS 프로필 아이디 | string | | | 1231231 | 통합회원/Web만 해당 (GUEST_NO) |
-| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
-| **memberFirstName** | 영문 이름 | string | | | Gildong | |
-| **memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
-| **memberLastName** | 영문 성 | string | | | Hong | |
-| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
-| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
-| **memberGender** | 성별 | int | | Y | 00 | 00: 남성, 1: 여성, 2: 기타 |
-| **memberBirth** | 생년월일 | string | | Y | 19990101 | YYYYMMDD 형식 |
-| **employeeStatus** | 임직원여부 | string | | Y | N | |
+| **memberInfo** | 회원 정보 Object | object | | Y | | |
+| **memberInfo.memberType** | 회원 유형 | string | | Y | U | U: 통합회원, R: Rewards, W: Web |
+| **memberInfo.integrationType** | 통합 유형 | string | | Y | U | U: 통합대상, T: 전환대상, N: 미대상 |
+| **memberInfo.loginId** | 통합 아이디 / 웹회원 아이디 | string | | Y | axlrose | 통합이 아닌 경우 웹회원 아이디 |
+| **memberInfo.rewardsMembershipNo** | 리워즈 멤버십 No | string | | | PM00004020 | |
+| **memberInfo.rewardsMembershipId** | 리워즈 ID | string | | | test001 | |
+| **memberInfo.webMemberId** | 웹회원 아이디 | string | | | test@gmail.com | |
+| **memberInfo.webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원에게만 존재 |
+| **memberInfo.cmsProfileId** | CMS 프로필 아이디 | string | | | 1231231 | 통합회원/Web만 해당 (GUEST_NO) |
+| **memberInfo.memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberInfo.memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberInfo.memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
+| **memberInfo.memberLastName** | 영문 성 | string | | | Hong | |
+| **memberInfo.memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberInfo.memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberInfo.memberGender** | 성별 | int | | Y | 00 | 00: 남성, 1: 여성, 2: 기타 |
+| **memberInfo.memberBirth** | 생년월일 | string | | Y | 19990101 | YYYYMMDD 형식 |
+| **memberInfo.memberZipCode** | 우편번호 | string | | | 12535 | |
+| **memberInfo.memberAddress1** | 주소1 | string | | | 서울시 강남구 논현동 | |
+| **memberInfo.memberAddress2** | 주소2 | string | | | 101호 | |
+| **memberInfo.memberJoinDate** | 가입일 | string | | | 20250101 | YYYYMMDD 형식 |
+| **memberInfo.employeeStatus** | 임직원여부 | string | | Y | N | |
 ```
 
 
@@ -87,18 +92,28 @@
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
 | **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
-| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원, R: Rewards, W: Web |
-| **rewardsMembershipNo** | 멤버십 No | string | | | PM00004020 | |
-| **loginId** | 통합 아이디 | string | | | axlrose | |
-| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
-| **memberFirstName** | 영문 이름 | string | | | Gildong | |
-| **memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
-| **memberLastName** | 영문 성 | string | | | Hong | |
-| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
-| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
-| **memberGender** | 성별 | int | | | 00 | 00: 남성, 1: 여성, 2: 기타 |
-| **memberBirth** | 생년월일 | string | | | 19990101 | YYYYMMDD 형식 |
-| **employeeStatus** | 임직원여부 | string | | | N | |
+| **memberInfo** | 회원 정보 Object | object | | Y | | |
+| **memberInfo.memberType** | 회원 유형 | string | | Y | U | U: 통합회원, R: Rewards, W: Web |
+| **memberInfo.integrationType** | 통합 유형 | string | | Y | N | N: 미대상 (이미 통합 완료) |
+| **memberInfo.loginId** | 통합 아이디 | string | | | axlrose | |
+| **memberInfo.rewardsMembershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **memberInfo.rewardsMembershipId** | 리워즈 ID | string | | | axlrose | |
+| **memberInfo.webMemberId** | 웹회원 아이디 | string | | | test@gmail.com | |
+| **memberInfo.webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | |
+| **memberInfo.cmsProfileId** | CMS 프로필 아이디 | string | | | 1231231 | |
+| **memberInfo.memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberInfo.memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberInfo.memberMiddleName** | 영문 중간 이름 | string | | | Heo | |
+| **memberInfo.memberLastName** | 영문 성 | string | | | Hong | |
+| **memberInfo.memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberInfo.memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberInfo.memberGender** | 성별 | int | | | 00 | 00: 남성, 1: 여성, 2: 기타 |
+| **memberInfo.memberBirth** | 생년월일 | string | | | 19990101 | YYYYMMDD 형식 |
+| **memberInfo.memberZipCode** | 우편번호 | string | | | 12535 | |
+| **memberInfo.memberAddress1** | 주소1 | string | | | 서울시 강남구 논현동 | |
+| **memberInfo.memberAddress2** | 주소2 | string | | | 101호 | |
+| **memberInfo.memberJoinDate** | 가입일 | string | | | 20250101 | YYYYMMDD 형식 |
+| **memberInfo.employeeStatus** | 임직원여부 | string | | | N | |
 ```
 
 
@@ -255,19 +270,27 @@
 | **resultCode** | 결과 코드 | string | | Y | 1000 |
 | **msg** | 메시지 | string | | Y | Success |
 | **data** | 결과 Object | object | | Y | |
-| **memberType** | 회원 유형 | string | | Y | W |
-| **membershipUserInfoId** | 회원 시퀀스 아이디 | int | | Y | 1234 |
-| **membershipNo** | 멤버십 No | string | | | PM00004020 |
-| **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose |
-| **memberName** | 한글 이름 | string | | Y | 홍길동 |
-| **memberFirstName** | 영문 이름 | string | | | Gildong |
-| **memberMiddleName** | 영문 중간 이름 | string | | | Heo |
-| **memberLastName** | 영문 성 | string | | | Hong |
-| **memberMobile** | 휴대전화 | string | | Y | 01098765432 |
-| **memberEmail** | 이메일 | string | | Y | test@gmail.com |
-| **memberGender** | 성별 | int | | | 0 |
-| **memberBirth** | 생년월일 | string | | | 19990101 |
-| **employeeStatus** | 임직원여부 | string | | | N |
+| **memberInfo** | 회원 정보 Object | object | | Y | |
+| **memberInfo.memberType** | 회원 유형 | string | | Y | W |
+| **memberInfo.integrationType** | 통합 유형 | string | | Y | T | T: 전환대상 |
+| **memberInfo.membershipUserInfoId** | 회원 시퀀스 아이디 | int | | Y | 1234 |
+| **memberInfo.membershipNo** | 멤버십 No | string | | | PM00004020 |
+| **memberInfo.membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose |
+| **memberInfo.webMemberId** | 웹회원 아이디 | string | | | test@gmail.com |
+| **memberInfo.webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 |
+| **memberInfo.memberName** | 한글 이름 | string | | Y | 홍길동 |
+| **memberInfo.memberFirstName** | 영문 이름 | string | | | Gildong |
+| **memberInfo.memberMiddleName** | 영문 중간 이름 | string | | | Heo |
+| **memberInfo.memberLastName** | 영문 성 | string | | | Hong |
+| **memberInfo.memberMobile** | 휴대전화 | string | | Y | 01098765432 |
+| **memberInfo.memberEmail** | 이메일 | string | | Y | test@gmail.com |
+| **memberInfo.memberGender** | 성별 | int | | | 0 |
+| **memberInfo.memberBirth** | 생년월일 | string | | | 19990101 |
+| **memberInfo.memberZipCode** | 우편번호 | string | | | 12535 |
+| **memberInfo.memberAddress1** | 주소1 | string | | | 서울시 강남구 논현동 |
+| **memberInfo.memberAddress2** | 주소2 | string | | | 101호 |
+| **memberInfo.memberJoinDate** | 가입일 | string | | | 20250101 |
+| **memberInfo.employeeStatus** | 임직원여부 | string | | | N |
 ```
 
 
@@ -301,23 +324,28 @@
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
 | **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
-| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
-| **membershipNo** | 멤버십 No | string | | | PM00004020 | |
-| **webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원만 존재 |
-| **loginId** | 로그인 ID | string | | | axlrose | |
-| **webMemberId** | 웹회원 아이디 | string | | | axlrose | |
-| **memberName** | 한글 이름 | string | | Y | 홍길동 | |
-| **memberFirstName** | 영문 이름 | string | | | Gildong | |
-| **memberMiddleName** | 영문 이름 | string | | | Gildong | |
-| **memberLastName** | 영문 성 | string | | | Hong | |
-| **memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
-| **memberEmail** | 이메일 | string | | Y | test@gmail.com | |
-| **memberGender** | 성별 | int | | | 00 | 00: 남성 / 1: 여성 / 2: 기타 |
-| **memberBirth** | 생년월일 | string | | | 19990101 | YYYYMMDD |
-| **employeeStatus** | 임직원여부 | string | | | N | |
-| **zipCode** | 우편번호 | string | | | 12535 | |
-| **address1** | 집 주소 | string | | | 서울시 강남구 논현동 | |
-| **address2** | 상세 집 주소 | string | | | 101호 | |
+| **memberInfo** | 회원 정보 Object | object | | Y | | |
+| **memberInfo.memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
+| **memberInfo.integrationType** | 통합 유형 | string | | Y | N | N: 미대상 (이미 통합 완료) |
+| **memberInfo.membershipNo** | 멤버십 No | string | | | PM00004020 | |
+| **memberInfo.rewardsMembershipId** | 리워즈 ID | string | | | axlrose | |
+| **memberInfo.webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원만 존재 |
+| **memberInfo.loginId** | 로그인 ID | string | | | axlrose | |
+| **memberInfo.webMemberId** | 웹회원 아이디 | string | | | axlrose | |
+| **memberInfo.cmsProfileId** | CMS 프로필 아이디 | string | | | 1231231 | |
+| **memberInfo.memberName** | 한글 이름 | string | | Y | 홍길동 | |
+| **memberInfo.memberFirstName** | 영문 이름 | string | | | Gildong | |
+| **memberInfo.memberMiddleName** | 영문 이름 | string | | | Gildong | |
+| **memberInfo.memberLastName** | 영문 성 | string | | | Hong | |
+| **memberInfo.memberMobile** | 휴대전화 | string | | Y | 01098765432 | |
+| **memberInfo.memberEmail** | 이메일 | string | | Y | test@gmail.com | |
+| **memberInfo.memberGender** | 성별 | int | | | 00 | 00: 남성 / 1: 여성 / 2: 기타 |
+| **memberInfo.memberBirth** | 생년월일 | string | | | 19990101 | YYYYMMDD |
+| **memberInfo.memberZipCode** | 우편번호 | string | | | 12535 | |
+| **memberInfo.memberAddress1** | 주소1 | string | | | 서울시 강남구 논현동 | |
+| **memberInfo.memberAddress2** | 주소2 | string | | | 101호 | |
+| **memberInfo.memberJoinDate** | 가입일 | string | | | 20250101 | YYYYMMDD |
+| **memberInfo.employeeStatus** | 임직원여부 | string | | | N | |
 | **termInfos** | 선택 약관 리스트 | list | | | | |
 | **termInfoId** | 약관 고유 아이디 | string | | | T001 | |
 | **termItemInfoId** | 약관 세부 아이디 | int | | | 10 | |
