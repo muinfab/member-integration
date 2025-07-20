@@ -1,0 +1,67 @@
+@startuml 005-check-email-sequence
+!theme plain
+title 이메일 중복 체크 API 시퀀스 다이어그램 (IDMI-REWARDS-005)
+
+actor Client as "클라이언트"
+participant Controller as "MembershipController"
+participant Service as "MembershipService"
+participant Repository as "MemberRepository"
+database Database as "Database"
+
+== 이메일 중복 체크 요청 ==
+
+Client -> Controller: GET /v1/membership/integration/check/email\ncheckInfo=test@gmail.com
+activate Controller
+
+Controller -> Controller: 요청 파라미터 검증\n- checkInfo (필수)
+note right: 이메일 형식 검증\n- 이메일 패턴 검증\n- 도메인 유효성 체크
+
+Controller -> Service: checkEmailDuplicate(checkInfo)
+activate Service
+
+Service -> Service: 이메일 유효성 검사
+note right: - 이메일 형식 검증\n- 도메인 존재 여부 체크\n- 금지된 도메인 체크
+
+Service -> Repository: existsByMemberEmail(checkInfo)
+activate Repository
+
+Repository -> Database: SELECT COUNT(*) FROM members\nWHERE member_email = ?
+activate Database
+
+Database --> Repository: 중복 여부 결과 (0 또는 1)
+deactivate Database
+
+Repository -> Repository: 중복 여부 판단
+Repository --> Service: boolean isDuplicate
+deactivate Repository
+
+Service -> Service: 중복 체크 결과 처리
+note right: 중복이면 false (사용 불가)\n중복이 아니면 true (사용 가능)
+
+alt 이메일 사용 가능
+    Service --> Controller: CheckEmailResponse(success=true)
+else 이메일 중복
+    Service --> Controller: CheckEmailResponse(success=false)
+end
+
+Controller -> Controller: 응답 데이터 구성
+note right: resultCode: 1000\nmsg: Success\ndata: null
+
+Controller --> Client: HTTP 200 OK\n이메일 중복 체크 결과 응답
+deactivate Controller
+
+== 에러 처리 ==
+
+alt 파라미터 검증 실패
+    Controller -> Controller: 파라미터 검증 실패 처리
+    note right: 이메일 형식이 올바르지 않음
+    Controller --> Client: HTTP 400\nBad Request
+end
+
+alt 데이터베이스 오류
+    Service -> Service: 데이터베이스 오류 처리
+    Service --> Controller: ErrorResponse
+    Controller --> Client: HTTP 500\nInternal Server Error
+end
+
+@enduml 

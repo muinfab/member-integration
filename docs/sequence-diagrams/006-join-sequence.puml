@@ -1,0 +1,122 @@
+@startuml 006-join-sequence
+!theme plain
+title 회원 가입 API 시퀀스 다이어그램 (IDMI-REWARDS-006)
+
+actor Client as "클라이언트"
+participant Controller as "MembershipController"
+participant Service as "MembershipService"
+participant Repository as "MemberRepository"
+participant TermsRepository as "TermsRepository"
+database Database as "Database"
+
+== 회원 가입 요청 ==
+
+Client -> Controller: POST /v1/membership/integration/join
+activate Controller
+
+note right of Client: {
+  "joinType": 1,
+  "joinMethod": 0,
+  "joinId": "axlrose",
+  "joinPw": "password123",
+  "channelId": 3670111365,
+  "webMemberId": "test@gmail.com",
+  "memberName": "홍길동",
+  "memberEmail": "test@gmail.com",
+  "memberMobile": "01098765432",
+  "memberGender": 0,
+  "memberBirth": "19990101",
+  "localYn": "Y",
+  "termInfos": [...]
+}
+
+Controller -> Controller: 요청 파라미터 검증
+note right: - 필수 필드 검증\n- 이메일/휴대폰 형식 검증\n- 약관 동의 여부 검증
+
+Controller -> Service: joinMember(joinRequest)
+activate Service
+
+Service -> Service: 아이디 중복 체크
+Service -> Repository: existsByLoginId(joinId)
+activate Repository
+Repository -> Database: SELECT COUNT(*) FROM members\nWHERE login_id = ?\nOR rewards_membership_id = ?\nOR web_member_id = ?
+Database --> Repository: 중복 여부
+Repository --> Service: boolean isDuplicate
+deactivate Repository
+
+alt 아이디 중복
+    Service --> Controller: ErrorResponse(아이디 중복)
+    Controller --> Client: HTTP 400\n아이디 중복 오류
+    deactivate Controller
+    deactivate Service
+    stop
+end
+
+Service -> Service: 이메일 중복 체크
+Service -> Repository: existsByMemberEmail(memberEmail)
+activate Repository
+Repository -> Database: SELECT COUNT(*) FROM members\nWHERE member_email = ?
+Database --> Repository: 중복 여부
+Repository --> Service: boolean isEmailDuplicate
+deactivate Repository
+
+alt 이메일 중복
+    Service --> Controller: ErrorResponse(이메일 중복)
+    Controller --> Client: HTTP 400\n이메일 중복 오류
+    deactivate Controller
+    deactivate Service
+    stop
+end
+
+Service -> Service: 비밀번호 암호화
+note right: BCrypt로 비밀번호 해시화
+
+Service -> Service: 회원 정보 생성
+note right: - memberType: W (Web)\n- integrationType: T (전환대상)\n- 가입일자 설정
+
+Service -> Repository: saveMember(member)
+activate Repository
+Repository -> Database: INSERT INTO members\n(login_id, member_email, member_name, ...)\nVALUES (?, ?, ?, ...)
+Database --> Repository: 생성된 회원 ID
+Repository --> Service: Member savedMember
+deactivate Repository
+
+Service -> Service: 약관 동의 정보 저장
+Service -> TermsRepository: saveTermsAgreement(memberId, termInfos)
+activate TermsRepository
+TermsRepository -> Database: INSERT INTO terms_agreement\n(member_id, term_info_id, agree_yn, ...)\nVALUES (?, ?, ?, ...)
+Database --> TermsRepository: 약관 동의 저장 완료
+TermsRepository --> Service: TermsAgreement saved
+deactivate TermsRepository
+
+Service -> Service: 가입 완료 회원 정보 조회
+Service -> Repository: findById(savedMember.getId())
+activate Repository
+Repository -> Database: SELECT * FROM members\nWHERE id = ?
+Database --> Repository: 회원 정보
+Repository --> Service: Member memberInfo
+deactivate Repository
+
+Service --> Controller: JoinResponse(memberInfo)
+deactivate Service
+
+Controller -> Controller: 응답 데이터 구성
+note right: resultCode: 1000\nmsg: Success\ndata.memberInfo: 가입된 회원 정보\n- memberType: W\n- integrationType: T\n- membershipUserInfoId: 1234\n- memberName: 홍길동\n- memberEmail: test@gmail.com\n- memberJoinDate: 20250101
+
+Controller --> Client: HTTP 201 Created\n회원 가입 완료 응답
+deactivate Controller
+
+== 에러 처리 ==
+
+alt 파라미터 검증 실패
+    Controller -> Controller: 파라미터 검증 실패 처리
+    Controller --> Client: HTTP 400\nBad Request
+end
+
+alt 데이터베이스 오류
+    Service -> Service: 데이터베이스 오류 처리
+    Service --> Controller: ErrorResponse
+    Controller --> Client: HTTP 500\nInternal Server Error
+end
+
+@enduml 
