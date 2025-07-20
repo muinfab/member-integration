@@ -1,0 +1,63 @@
+@startuml 010-common-code-sequence
+!theme plain
+title 공통코드 조회 API 시퀀스 다이어그램 (IDMI-REWARDS-010)
+
+actor Client as "클라이언트"
+participant Controller as "MembershipController"
+participant Service as "MembershipService"
+participant Repository as "CommonCodeRepository"
+database Database as "Database"
+
+== 공통코드 조회 요청 ==
+
+Client -> Controller: GET /v1/membership/integration/reason?classCode=22
+activate Controller
+
+note right of Client: classCode: 22 (탈퇴사유)
+
+Controller -> Controller: 요청 파라미터 검증
+note right: - classCode 필수값 검증\n- classCode 형식 검증
+
+Controller -> Service: getCommonCodes(classCode)
+activate Service
+
+Service -> Service: 공통코드 조회
+Service -> Repository: findByClassCode(classCode)
+activate Repository
+Repository -> Database: SELECT common_code, common_name\nFROM common_codes\nWHERE class_code = ?\nORDER BY sort_order
+Database --> Repository: 공통코드 목록
+note right: 예시 데이터:\n001: 멤버십 서비스 불만족으로 인한 탈퇴\n002: 개인정보 보호 정책 불만족\n003: 서비스 이용 빈도 감소\n004: 기타
+Repository --> Service: List<CommonCode> commonCodes
+deactivate Repository
+
+alt 공통코드 존재
+    Service -> Service: 응답 데이터 구성
+    note right: 공통코드 목록을\n응답 형식에 맞게 변환
+    Service --> Controller: CommonCodeResponse(commonCodes)
+else 공통코드 없음
+    Service --> Controller: CommonCodeResponse(emptyList)
+end
+
+deactivate Service
+
+Controller -> Controller: 응답 데이터 구성
+note right: resultCode: 1000\nmsg: Success\ndata: 공통코드 목록\n- commonCode: 001\n- commonName: 멤버십 서비스 불만족으로 인한 탈퇴\n- commonCode: 002\n- commonName: 개인정보 보호 정책 불만족
+
+Controller --> Client: HTTP 200 OK\n공통코드 조회 완료 응답
+deactivate Controller
+
+== 에러 처리 ==
+
+alt 파라미터 검증 실패
+    Controller -> Controller: 파라미터 검증 실패 처리
+    note right: classCode가 없거나\n잘못된 형식인 경우
+    Controller --> Client: HTTP 400\nBad Request\nresultCode: ERR001\nmsg: 필수 파라미터가 누락되었습니다
+end
+
+alt 데이터베이스 오류
+    Service -> Service: 데이터베이스 오류 처리
+    Service --> Controller: ErrorResponse
+    Controller --> Client: HTTP 500\nInternal Server Error\nresultCode: ERR999\nmsg: 시스템 오류가 발생했습니다
+end
+
+@enduml 
