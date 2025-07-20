@@ -1,0 +1,66 @@
+@startuml 012-find-id-sequence
+!theme plain
+title 회원 아이디 찾기 API 시퀀스 다이어그램 (IDMI-REWARDS-012)
+
+actor Client as "클라이언트"
+participant Controller as "MembershipController"
+participant Service as "MembershipService"
+participant Repository as "MemberRepository"
+database Database as "Database"
+
+== 회원 아이디 찾기 요청 ==
+
+Client -> Controller: POST /v1/membership/integration/find/id
+activate Controller
+
+note right of Client: memberName: 홍길동\nmemberEmail: test@gmail.com
+
+Controller -> Controller: 요청 파라미터 검증
+note right: - 필수 필드 검증\n- memberName, memberEmail\n- 이메일 형식 검증
+
+Controller -> Service: findMemberId(findIdRequest)
+activate Service
+
+Service -> Service: 회원 정보 조회
+Service -> Repository: findByMemberNameAndMemberEmail(memberName, memberEmail)
+activate Repository
+Repository -> Database: SELECT member_type, login_id\nFROM members\nWHERE member_name = ?\nAND member_email = ?\nAND member_status = 'ACTIVE'
+Database --> Repository: 회원 정보
+note right: 예시 결과:\nmemberType: U\nloginId: axlrose
+Repository --> Service: Member member
+deactivate Repository
+
+alt 회원 정보 존재
+    Service -> Service: 응답 데이터 구성
+    note right: 회원 유형과 로그인 ID를\n응답 형식에 맞게 변환
+    Service --> Controller: FindIdResponse(memberType, loginId)
+else 회원 정보 없음
+    Service --> Controller: ErrorResponse(회원 정보 없음)
+    Controller --> Client: HTTP 404\nNot Found\nresultCode: ERR102\nmsg: 해당 정보로 가입된 회원을 찾을 수 없습니다
+    deactivate Controller
+    deactivate Service
+end
+
+deactivate Service
+
+Controller -> Controller: 응답 데이터 구성
+note right: resultCode: 1000\nmsg: Success\ndata:\n- memberType: U (통합회원)\n- loginId: axlrose
+
+Controller --> Client: HTTP 200 OK\n회원 아이디 찾기 완료 응답
+deactivate Controller
+
+== 에러 처리 ==
+
+alt 파라미터 검증 실패
+    Controller -> Controller: 파라미터 검증 실패 처리
+    note right: memberName 또는 memberEmail이\n없거나 잘못된 형식인 경우
+    Controller --> Client: HTTP 400\nBad Request\nresultCode: ERR001\nmsg: 필수 파라미터가 누락되었습니다
+end
+
+alt 데이터베이스 오류
+    Service -> Service: 데이터베이스 오류 처리
+    Service --> Controller: ErrorResponse
+    Controller --> Client: HTTP 500\nInternal Server Error\nresultCode: ERR999\nmsg: 시스템 오류가 발생했습니다
+end
+
+@enduml 
