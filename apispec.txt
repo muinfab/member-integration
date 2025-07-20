@@ -28,7 +28,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
 | **memberType** | 회원 유형 | string | | Y | U | U: 통합회원, R: Rewards, W: Web |
 | **integrationType** | 통합 유형 | string | | Y | U | U: 통합대상, T: 전환대상, N: 미대상 |
@@ -85,7 +85,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
 | **memberType** | 회원 유형 | string | | Y | U | U: 통합회원, R: Rewards, W: Web |
 | **rewardsMembershipNo** | 멤버십 No | string | | | PM00004020 | |
@@ -128,7 +128,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
 | **termInfos** | 동의 약관 정보 List | list | | | | |
 | **termInfoId** | 약관 유형 아이디 | string | | Y | T001 | |
@@ -170,7 +170,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 데이터 | object | | Y | null | |
 ```
 
@@ -201,7 +201,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 데이터 | object | | Y | null | |
 ```
 
@@ -253,7 +253,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 |
 |---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 |
-| **mesg** | 메시지 | string | | Y | Success |
+| **msg** | 메시지 | string | | Y | Success |
 | **data** | 결과 Object | object | | Y | |
 | **memberType** | 회원 유형 | string | | Y | W |
 | **membershipUserInfoId** | 회원 시퀀스 아이디 | int | | Y | 1234 |
@@ -299,7 +299,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
 | **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **membershipNo** | 멤버십 No | string | | | PM00004020 | |
@@ -376,7 +376,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | null | |
 ```
 
@@ -410,7 +410,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | null | |
 ```
 
@@ -441,7 +441,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 List | list | Y | | |
 | **commonCode** | 회원 유형 | string | | Y | 001 | |
 | **commonName** | 멤버십 No | string | | Y | 멤버십 서비스 불만족으로 인한 탈퇴 | |
@@ -477,7 +477,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | null | |
 ```
 
@@ -509,7 +509,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | | | |
 | **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **loginId** | 회원 아이디 | string | | | axlrose | |
@@ -543,7 +543,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | null | |
 ```
 
@@ -600,7 +600,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 200 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | | | |
 | **cmsProfileId** | CMS 프로필 아이디 | int | | | 1231231 | |
 | **cmsMembershipId** | CMS 멤버십 아이디 | string | | | G1235533 | |
@@ -658,7 +658,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 200 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | null | |
 ```
 
@@ -708,7 +708,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | null | |
 ```
 
@@ -748,7 +748,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 200 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | | | |
 | **cmsMembershipId** | CMS 멤버십 아이디 | string | | | 342123122 | |
 ```
@@ -797,7 +797,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 200 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | null | |
 ```
 
@@ -829,7 +829,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
 | **rejectYn** | 인증 결과 | string | | Y | Y | Y: 인증 성공, N: 인증 실패 |
 ```
@@ -861,7 +861,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | null | |
 ```
 
@@ -892,7 +892,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
 | **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **integrationType** | 통합 유형 | string | | Y | U | U: 통합대상 / T: 전환대상 / N: 미대상 |
@@ -952,7 +952,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | null | |
 ```
 
@@ -986,7 +986,7 @@
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
-| **mesg** | 메시지 | string | | Y | Success | |
+| **msg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
 | **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **integrationType** | 통합 유형 | string | | Y | UU | UU: 통합대상 / T: 전환대상 / N: 미대상 |
