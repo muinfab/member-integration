@@ -16,7 +16,7 @@
 
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
-| **loginType** | 로그인 유형 | int | | Y | 00 | 00: 일반 로그인, 1: 간편 로그인 |
+| **loginType** | 로그인 유형 | int | | Y | 0 | 0: 일반 로그인, 1: 간편 로그인 |
 | **loginId** | 로그인 아이디 | string | | | userid | 일반 로그인 시 아이디 (평문) |
 | **loginPw** | 로그인 패스워드 | string | | | password123 | 일반 로그인 시 패스워드 (평문) |
 | **channelId** | 카카오 아이디 | string | | | 43252323 | 간편 로그인 시 카카오 아이디 |
@@ -30,8 +30,8 @@
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
 | **mesg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
-| **memberType** | 회원 유형 | string | | Y | WU | WU: 통합회원, R: Rewards, W: Web |
-| **integrationType** | 통합 유형 | string | | Y | UU | UU: 통합대상, T: 전환대상, N: 미대상 |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원, R: Rewards, W: Web |
+| **integrationType** | 통합 유형 | string | | Y | U | U: 통합대상, T: 전환대상, N: 미대상 |
 | **webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원에게만 존재 |
 | **rewardsMembershipNo** | 리워즈 멤버십 No | string | | | PM00004020 | |
 | **rewardsMembershipId** | 리워즈 ID | string | | | test001 | |
@@ -87,7 +87,7 @@
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
 | **mesg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
-| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원, R: Rewards, W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원, R: Rewards, W: Web |
 | **rewardsMembershipNo** | 멤버십 No | string | | | PM00004020 | |
 | **loginId** | 통합 아이디 | string | | | axlrose | |
 | **memberName** | 한글 이름 | string | | Y | 홍길동 | |
@@ -289,7 +289,7 @@
 
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
-| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **loginId** | 로그인 아이디 | string | | Y | axlrose | |
 | **loginPw** | 로그인 패스워드 | string | | Y | $2a$10$x9Sd07/Mj0LkDRRHQs24h.2qfP0BjRi7liFeEniDJZ/g0p/1V5kJ2 | |
 
@@ -301,7 +301,7 @@
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
 | **mesg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
-| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **membershipNo** | 멤버십 No | string | | | PM00004020 | |
 | **webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원만 존재 |
 | **loginId** | 로그인 ID | string | | | axlrose | |
@@ -348,7 +348,7 @@
 
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
-| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **membershipUserInfoId** | 회원 아이디 | int | | | 200 | 통합회원/Web회원만 존재 |
 | **membershipNo** | 멤버십 No | string | | | PM00004020 | |
 | **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose | |
@@ -399,7 +399,7 @@
 
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
-| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **loginId** | 멤버십 아이디 / 통합 아이디 | string | | Y | axlrose | 통합이 아닌 경우, 웹회원 아이디 |
 | **oldLoginPw** | 이전 비밀번호 | string | | Y | test1234 | |
 | **newLoginPw** | 변경 비밀번호 | string | | Y | test4321 | |
@@ -511,7 +511,7 @@
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
 | **mesg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | | | |
-| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **loginId** | 회원 아이디 | string | | | axlrose | |
 ```
 
@@ -566,7 +566,7 @@
 
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
-| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **membershipNo** | 멤버십 No | string | | | PM00004020 | |
 | **loginId** | | string | | | axlrose | |
 | **webMemberId** | 웹회원 아이디 | string | | Y | axlrose | |
@@ -625,7 +625,7 @@
 
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
-| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **membershipNo** | 멤버십 No | string | | | PM00004020 | |
 | **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose | |
 | **webMemberId** | 웹회원 아이디 | string | | Y | axlrose | |
@@ -731,7 +731,7 @@
 
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
-| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **membershipNo** | 멤버십 No | string | | | PM00004020 | |
 | **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose | |
 | **webMemberId** | 웹회원 아이디 | string | | Y | axlrose | |
@@ -772,7 +772,7 @@
 
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
-| **memberType** | 회원 유형 | string | | Y | UU | UU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **membershipNo** | 멤버십 No | string | | | PM00004020 | |
 | **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | | axlrose | |
 | **webMemberId** | 웹회원 아이디 | string | | Y | axlrose | |
@@ -894,8 +894,8 @@
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
 | **mesg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
-| **memberType** | 회원 유형 | string | | Y | WU | WU: 통합회원 / R: Rewards / W: Web |
-| **integrationType** | 통합 유형 | string | | Y | UU | UU: 통합대상 / T: 전환대상 / N: 미대상 |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
+| **integrationType** | 통합 유형 | string | | Y | U | U: 통합대상 / T: 전환대상 / N: 미대상 |
 | **webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원만 존재 |
 | **membershipNo** | 멤버십 No | string | | | PM00004020 | |
 | **membershipId** | 멤버십 아이디 / 통합 아이디 | string | | Y | axlrose | |
@@ -932,7 +932,7 @@
 
 | 파라미터명 | 설명 | 데이터 타입 | 길이 | 필수 | 샘플 값 | 비고 |
 |---|---|---|---|---|---|---|
-| **memberType** | 회원 유형 | string | | Y | W | WU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **loginId** | 회원 아이디 | string | | Y | axlose | |
 | **extraMembershipInfo** | 추가 멤버십 정보 | object | | | | |
 | **extraMembershipType** | 멤버십 유형 | string | | | G | G (골드), P (플래티넘), L (스마트) |
@@ -988,7 +988,7 @@
 | **resultCode** | 결과 코드 | string | | Y | 1000 | |
 | **mesg** | 메시지 | string | | Y | Success | |
 | **data** | 결과 Object | object | | Y | | |
-| **memberType** | 회원 유형 | string | | Y | WU | WU: 통합회원 / R: Rewards / W: Web |
+| **memberType** | 회원 유형 | string | | Y | U | U: 통합회원 / R: Rewards / W: Web |
 | **integrationType** | 통합 유형 | string | | Y | UU | UU: 통합대상 / T: 전환대상 / N: 미대상 |
 | **webInfoId** | 웹 회원 전용 시퀀스 아이디 | int | | | 200 | 웹 회원만 존재 |
 | **membershipNo** | 멤버십 No | string | | | PM00004020 | |
