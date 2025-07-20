@@ -1,0 +1,270 @@
+@startuml 로그인 API 시퀀스 다이어그램
+
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 20
+skinparam maxmessagesize 60
+
+title **로그인 API 시퀀스 다이어그램** (IDMI-REWARDS-001)
+
+actor "클라이언트\n(User/IWS, The Parnas)" as Client
+participant "MembershipController" as Controller
+participant "MembershipService" as Service
+participant "MemberRepository" as Repository
+participant "Member\n(Domain)" as Member
+participant "LoginHistory" as History
+
+== 로그인 요청 처리 ==
+
+note over Client: **요청 파라미터**\n\n**일반 로그인:**\nloginType: 0\nloginId: "user123"\nloginPw: "password123"\n\n**간편 로그인:**\nloginType: 1\nchannelId: "43252323"\nmemberCi: "ySiSkQvaSj0ifo3ytt760s38dAHM..."\n\n**회원 유형별 요청:**\n• 웹회원: webMemberId (이메일) + password\n• 리워즈회원: rewardsMembershipId + password
+
+Client -> Controller: POST /v1/membership/integration/login\n(LoginRequest)
+activate Controller
+
+== 1. 입력값 검증 (Controller) ==
+Controller -> Controller: validateLoginRequest(request)
+note right: **Controller에서 검증:**\n1. loginId 필수 여부 확인 (ERR001)\n2. loginType에 따른 필수 파라미터 검증\n3. 웹회원/리워즈회원 구분 검증\n4. 비밀번호 필수 여부 확인 (일반 로그인)
+
+alt 입력값 검증 실패
+    Controller --> Client: ErrorResponse(400, "ERR001", "필수 데이터가 없습니다.")
+    deactivate Controller
+end
+
+Controller -> Service: login(LoginRequest request)
+activate Service
+
+== 2. 회원 정보 조회 ==
+Service -> Service: determineMemberType(request.loginId)
+note right: **회원 유형 판별:**\n• 이메일 형식 → 웹회원 (W)\n• 일반 아이디 → 리워즈회원 (R)\n• 통합 아이디 → 통합회원 (WU)
+
+Service -> Repository: findByLoginId(request.loginId)
+activate Repository
+
+Repository -> Repository: SELECT * FROM members WHERE login_id = ?
+Repository --> Service: Optional<Member>
+
+alt 회원이 존재하지 않는 경우
+    Service --> Controller: ErrorResponse(404, "ERR101", "가입정보가 없습니다.")
+    Controller --> Client: 404 Not Found
+    deactivate Repository
+    deactivate Service
+    deactivate Controller
+end
+
+Repository --> Service: member
+deactivate Repository
+
+== 3. 회원 상태 확인 ==
+Service -> Member: canLogin()
+activate Member
+
+Member -> Member: checkMemberStatus()
+note right: 1. 회원 상태 확인 (ACTIVE, INACTIVE, WITHDRAWN)\n2. 계정 잠금 여부 확인\n3. 탈퇴 여부 확인\n4. 로그인 실패 횟수 확인
+
+alt 계정 잠금 상태
+    Member --> Service: false (LOCKED)
+    Service --> Controller: ErrorResponse(403, "ERR103", "계정 잠금 상태입니다.")
+    Controller --> Client: 403 Forbidden
+    deactivate Member
+    deactivate Service
+    deactivate Controller
+end
+
+alt 블락된 회원
+    Member --> Service: false (BLOCKED)
+    Service --> Controller: ErrorResponse(403, "ERR104", "블락 된 회원입니다.")
+    Controller --> Client: 403 Forbidden
+    deactivate Member
+    deactivate Service
+    deactivate Controller
+end
+
+Member --> Service: true
+deactivate Member
+
+== 4. 비밀번호 검증 (일반 로그인만) ==
+alt request.loginType == 0 (일반 로그인)
+    Service -> Member: password.matches(request.loginPw)
+    activate Member
+    
+    Member -> Member: validatePassword(plainPassword)
+    note right: 1. BCrypt로 암호화된 비밀번호 비교\n2. salt + hash 검증\n3. 웹회원/리워즈회원 비밀번호 검증
+    
+    alt 비밀번호 불일치
+        Member --> Service: false
+        Service -> Repository: incrementLoginFailureCount(member.getId())
+        Service --> Controller: ErrorResponse(401, "ERR102", "아이디 또는 비밀번호가 틀렸습니다.")
+        Controller --> Client: 401 Unauthorized
+        deactivate Member
+        deactivate Service
+        deactivate Controller
+    end
+    
+    Member --> Service: true
+    Service -> Repository: resetLoginFailureCount(member.getId())
+    deactivate Member
+end
+
+== 5. 로그인 이력 생성 ==
+Service -> History: new LoginHistory()
+activate History
+
+History -> History: setMemberId(member.getId())
+History -> History: setLoginType(request.loginType)
+History -> History: setChannelInfo(request.channelId)
+History -> History: setLoginTime(NOW())
+History -> History: setIpAddress(getClientIP())
+History -> History: setUserAgent(getClientUserAgent())
+
+Service -> Repository: saveLoginHistory(loginHistory)
+activate Repository
+Repository -> Repository: INSERT INTO login_history (...)
+Repository --> Service: savedHistory
+deactivate Repository
+
+deactivate History
+
+== 6. 응답 생성 ==
+Service -> Service: createLoginResponse(member)
+note right: 1. 회원 정보 매핑\n2. memberType, integrationType 설정\n3. 회원 유형별 추가 정보 설정\n4. 응답 데이터 구성
+
+Service --> Controller: LoginResponse
+deactivate Service
+
+Controller --> Client: 200 OK + LoginResponse
+deactivate Controller
+
+== 응답 데이터 구조 ==
+note over Client, History
+**성공 응답 예시:**
+
+**웹회원 응답:**
+code: "1000"
+message: "Success"
+data:
+  memberType: "W"
+  integrationType: "T"
+  loginId: "test@gmail.com"
+  webInfoId: 200
+  webMemberId: "test@gmail.com"
+  memberName: "홍길동"
+  memberEmail: "test@gmail.com"
+  memberMobile: "01098765432"
+
+**리워즈회원 응답:**
+code: "1000"
+message: "Success"
+data:
+  memberType: "R"
+  integrationType: "T"
+  loginId: "axlrose"
+  rewardsMembershipNo: "PM00004020"
+  rewardsMembershipId: "axlrose"
+  memberName: "홍길동"
+  memberEmail: "test@gmail.com"
+  memberMobile: "01098765432"
+
+**통합회원 응답:**
+code: "1000"
+message: "Success"
+data:
+  memberType: "WU"
+  integrationType: "UU"
+  loginId: "axlrose"
+  webInfoId: 200
+  webMemberId: "test@gmail.com"
+  rewardsMembershipNo: "PM00004020"
+  rewardsMembershipId: "axlrose"
+  cmsProfileId: "1231231"
+  memberName: "홍길동"
+  memberEmail: "test@gmail.com"
+  memberMobile: "01098765432"
+end note
+
+== 에러 코드 매핑 ==
+note over Client, History
+**로그인 API 관련 에러 코드:**
+
+**입력값 검증 에러:**
+- ERR001: "필수 데이터가 없습니다." (400)
+  - loginId 누락
+  - loginType에 따른 필수 파라미터 누락
+  - 비밀번호 누락 (일반 로그인)
+
+**인증 에러:**
+- ERR101: "가입정보가 없습니다." (404)
+  - 존재하지 않는 회원
+- ERR102: "아이디 또는 비밀번호가 틀렸습니다." (401)
+  - 비밀번호 불일치
+
+**계정 상태 에러:**
+- ERR103: "계정 잠금 상태입니다." (403)
+  - 로그인 실패 횟수 초과
+- ERR104: "블락 된 회원입니다." (403)
+  - 관리자에 의해 차단된 회원
+
+**HTTP 상태 코드:**
+- 200: 성공
+- 400: 잘못된 요청 (입력값 검증 실패)
+- 401: 인증 실패 (비밀번호 오류)
+- 403: 접근 금지 (계정 잠금/블락)
+- 404: 리소스 없음 (회원 없음)
+- 500: 서버 내부 오류
+end note
+
+== 회원 유형별 처리 로직 ==
+note over Client, History
+**회원 유형 판별 로직:**
+
+1. **웹회원 (W)**
+   - loginId가 이메일 형식
+   - webMemberId = loginId
+   - integrationType = "T" (전환대상)
+   - **비밀번호 필수** (일반 로그인)
+
+2. **리워즈회원 (R)**
+   - loginId가 일반 아이디 형식
+   - rewardsMembershipId = loginId
+   - integrationType = "T" (전환대상)
+   - **비밀번호 필수** (일반 로그인)
+
+3. **통합회원 (WU)**
+   - 이미 통합된 회원
+   - integrationType = "UU" (통합대상)
+   - 웹/리워즈 정보 모두 포함
+   - **비밀번호 필수** (일반 로그인)
+
+**비즈니스 로직:**
+- 웹회원/리워즈회원 로그인 시 → 리워즈 가입 유도
+- 통합회원 로그인 시 → 정상 서비스 이용
+- **모든 회원 유형에서 일반 로그인 시 비밀번호 필수**
+end note
+
+== 응답 필드 구조 ==
+note over Client, History
+**응답 필드 구조 (apispec.txt 기준):**
+
+**공통 필드:**
+- code: 결과 코드 (1000: 성공, ERR001~ERR503: 에러)
+- message: 응답 메시지 ("Success" 또는 에러 메시지)
+- data: 결과 데이터 객체
+
+**회원 정보 필드 (data 내부):**
+- memberType: 회원 유형 (WU/R/W)
+- integrationType: 통합 유형 (UU/T/N)
+- loginId: 로그인 아이디
+- memberName: 한글 이름
+- memberEmail: 이메일
+- memberMobile: 휴대전화
+- memberGender: 성별
+- memberBirth: 생년월일
+- employeeStatus: 임직원여부
+
+**회원 유형별 추가 필드:**
+- 웹회원: webInfoId, webMemberId
+- 리워즈회원: rewardsMembershipNo, rewardsMembershipId
+- 통합회원: 모든 필드 포함
+end note
+
+@enduml 
