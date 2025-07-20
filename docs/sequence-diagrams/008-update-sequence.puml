@@ -78,6 +78,19 @@ deactivate TermsRepository
 Service -> Service: 수정 완료 처리
 note right: - 수정 이력 기록\n- 관련 시스템 동기화
 
+Service -> Service: CMS 서버 동기화 호출
+Service -> "CMS Server": POST /v1/membership/integration/sync\n(회원 정보 동기화)
+note right: memberType, membershipNo, membershipId\nmemberName, memberMobile, memberEmail\nmemberBirth, zipCode, address1, address2\ntermInfos 등 전송
+
+alt CMS 동기화 성공
+    "CMS Server" --> Service: resultCode: 200\nmsg: Success
+    Service -> Service: CMS 동기화 완료 처리
+else CMS 동기화 실패
+    "CMS Server" --> Service: Error Response
+    Service -> Service: CMS 동기화 실패 로그 기록
+    note right: 동기화 실패해도\n회원 정보 수정은 완료
+end
+
 Service --> Controller: UpdateResponse(success=true)
 deactivate Service
 
