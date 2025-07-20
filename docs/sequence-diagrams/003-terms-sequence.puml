@@ -1,0 +1,53 @@
+@startuml 003-terms-sequence
+!theme plain
+title 가입 약관 조회 API 시퀀스 다이어그램 (IDMI-REWARDS-003)
+
+actor Client as "클라이언트"
+participant Controller as "MembershipController"
+participant Service as "MembershipService"
+participant Repository as "TermsRepository"
+database Database as "Database"
+
+== 약관 조회 요청 ==
+
+Client -> Controller: GET /v1/membership/integration/terms\nlanguage=ko
+activate Controller
+
+Controller -> Controller: 요청 파라미터 검증\n- language (선택사항)
+note right: ko, en, jp, ch 지원\njp, ch 없으면 en\nen 없으면 ko
+
+Controller -> Service: getTerms(language)
+activate Service
+
+Service -> Repository: findActiveTerms(language)
+activate Repository
+
+Repository -> Database: SELECT * FROM terms\nWHERE language = ?\nAND apply_date <= NOW()\nAND expire_date > NOW()\nORDER BY term_info_id, term_item_info_id
+activate Database
+
+Database --> Repository: 약관 데이터 반환
+deactivate Database
+
+Repository -> Repository: 약관 데이터 매핑
+Repository --> Service: List<Terms> terms
+deactivate Repository
+
+Service -> Service: 약관 정보 가공\n- 필수/선택 약관 분류\n- 수신 방법 정보 포함
+Service --> Controller: TermsResponse(terms)
+deactivate Service
+
+Controller -> Controller: 응답 데이터 구성
+note right: resultCode: 1000\nmsg: Success\ndata.termInfos: 약관 목록\n- termInfoId: T001\n- termItemInfoId: 10\n- applyDate: 20250101\n- expireDate: 99991231\n- requiredYn: Y\n- version: 4\n- title: 마케팅 정보 활용 동의\n- subTitle: 마케팅 수신 동의\n- contents: 약관 내용입니다.\n- receiveMethods: [MO, EM]
+
+Controller --> Client: HTTP 200 OK\n약관 정보 응답
+deactivate Controller
+
+== 에러 처리 ==
+
+alt 약관 조회 실패
+    Service -> Service: 약관 조회 실패 처리
+    Service --> Controller: ErrorResponse
+    Controller --> Client: HTTP 500\n에러 응답
+end
+
+@enduml 
