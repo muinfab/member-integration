@@ -12,6 +12,7 @@ database "리워즈 회원 DB" as RewardsMemberDB
 User -> IWS : 로그인 요청(리워즈 아이디, 비밀번호)
 
 ' 2. 웹 페이지(IWS)가 통합회원 서버에 로그인 요청 전달
+' [MI-REWARDS-001]
 IWS -> IntegrationServer : 로그인 요청(리워즈 아이디, 비밀번호)
 
 ' 3. 통합회원 서버가 통합회원 DB에서 회원 정보 조회

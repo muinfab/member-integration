@@ -1,0 +1,51 @@
+@startuml
+' 신규 회원 가입/전환 및 멤버십 가입 시나리오 상세 시퀀스 다이어그램
+' IWS는 웹 페이지(프론트엔드)임
+
+actor "사용자" as User
+participant "웹 페이지(IWS, 프론트엔드)" as IWS
+participant "통합회원 서버" as IntegrationServer
+participant "CMS 서버" as CMSServer
+participant "리워즈 회원 서버" as RewardsServer
+
+database "통합회원 DB" as IntegrationMemberDB
+
+database "리워즈 회원 DB" as RewardsMemberDB
+
+' 1. 사용자가 웹 페이지(IWS)에서 회원가입/전환 시작
+User -> IWS : 회원가입/전환 시작
+
+' 2. 약관 정보 요청 및 동의
+' [MI-REWARDS-003]
+IWS -> IntegrationServer : 약관 정보 요청
+IntegrationServer -> IntegrationMemberDB : 약관 정보 조회
+IntegrationMemberDB --> IntegrationServer : 약관 정보 반환
+IntegrationServer -> IWS : 약관 정보 전달
+User -> IWS : 약관 동의
+
+' 3. 리워즈 회원 가입 요청
+' [MI-REWARDS-006]
+IWS -> RewardsServer : 리워즈 회원 가입 요청(회원 정보)
+RewardsServer -> RewardsMemberDB : 회원 정보 등록
+RewardsMemberDB --> RewardsServer : 등록 결과 반환
+RewardsServer -> IWS : 가입 결과 반환
+
+' 4. 통합회원 DB에 회원 정보 신규 등록 또는 업데이트
+' [MI-REWARDS-006]
+IWS -> IntegrationServer : 통합회원 정보 등록/업데이트 요청(회원 정보)
+IntegrationServer -> IntegrationMemberDB : 회원 정보 등록/업데이트
+IntegrationMemberDB --> IntegrationServer : 처리 결과 반환
+IntegrationServer -> IWS : 처리 결과 반환
+
+alt 더 파르나스 멤버십 가입 선택 시
+    ' 5. 더 파르나스 멤버십 가입 및 CMS 서버 동기화
+    ' [MI-REWARDS-023]
+    IWS -> IntegrationServer : 멤버십 가입 요청
+    IntegrationServer -> CMSServer : 멤버십 가입 동기화 요청(회원 정보)
+    CMSServer --> IntegrationServer : 동기화 결과 반환
+    IntegrationServer -> IWS : 멤버십 가입 결과 반환
+end
+
+' 6. 최종 가입/전환 완료 안내
+IWS -> User : 가입/전환 완료 안내
+@enduml 

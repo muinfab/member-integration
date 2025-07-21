@@ -11,6 +11,7 @@ database "통합회원 DB" as IntegrationMemberDB
 User -> IWS : 회원통합 등록 요청(통합 아이디, 통합 패스워드, 약관 동의 등)
 
 ' 2. 웹 페이지(IWS)가 통합회원 서버에 회원통합 등록 요청 전달
+' [MI-REWARDS-002]
 IWS -> IntegrationServer : 회원통합 등록 요청(통합 아이디, 통합 패스워드, 약관 동의 등)
 
 ' 3. 통합회원 서버가 통합회원 DB에 통합 정보 업데이트 또는 신규 등록
