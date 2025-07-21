@@ -1,0 +1,29 @@
+@startuml
+' 통합회원 로그인 시나리오 상세 시퀀스 다이어그램
+' IWS는 웹 페이지(프론트엔드)임
+
+actor "사용자" as User
+participant "웹 페이지(IWS, 프론트엔드)" as IWS
+participant "통합회원 서버" as IntegrationServer
+database "통합회원 DB" as IntegrationMemberDB
+
+' 1. 사용자가 웹 페이지(IWS)에서 통합회원 아이디로 로그인 요청
+User -> IWS : 로그인 요청(통합회원 아이디, 비밀번호)
+
+' 2. 웹 페이지(IWS)가 통합회원 서버에 로그인 요청 전달
+IWS -> IntegrationServer : 로그인 요청(통합회원 아이디, 비밀번호)
+
+' 3. 통합회원 서버가 통합회원 DB에서 통합회원 정보 조회
+IntegrationServer -> IntegrationMemberDB : 통합회원 정보 조회(통합회원 아이디)
+IntegrationMemberDB --> IntegrationServer : 회원 정보 반환
+
+alt 통합회원 DB에 정보 있음
+    ' 4-1. 통합회원 DB에 정보가 있으면 로그인 성공
+    IntegrationServer -> IWS : 로그인 성공, 회원 유형=통합회원(U)
+    IWS -> User : 로그인 성공, 회원 유형=통합회원(U)
+else 통합회원 DB에 정보 없음
+    ' 4-2. 통합회원 DB에 정보가 없으면 로그인 실패
+    IntegrationServer -> IWS : 로그인 실패(존재하지 않는 아이디)
+    IWS -> User : 로그인 실패(존재하지 않는 아이디)
+end
+@enduml 

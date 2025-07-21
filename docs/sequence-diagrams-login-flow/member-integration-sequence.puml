@@ -1,0 +1,29 @@
+@startuml
+' 회원통합 등록(회원통합 절차 완료) 시나리오 상세 시퀀스 다이어그램
+' IWS는 웹 페이지(프론트엔드)임
+
+actor "사용자" as User
+participant "웹 페이지(IWS, 프론트엔드)" as IWS
+participant "통합회원 서버" as IntegrationServer
+database "통합회원 DB" as IntegrationMemberDB
+
+' 1. 사용자가 웹 페이지(IWS)에서 통합 절차(약관 동의, 통합 아이디/패스워드 입력 등)를 완료하고 회원통합 등록 요청
+User -> IWS : 회원통합 등록 요청(통합 아이디, 통합 패스워드, 약관 동의 등)
+
+' 2. 웹 페이지(IWS)가 통합회원 서버에 회원통합 등록 요청 전달
+IWS -> IntegrationServer : 회원통합 등록 요청(통합 아이디, 통합 패스워드, 약관 동의 등)
+
+' 3. 통합회원 서버가 통합회원 DB에 통합 정보 업데이트 또는 신규 등록
+IntegrationServer -> IntegrationMemberDB : 통합 정보 업데이트/등록(통합 아이디, 패스워드, 약관 동의 등)
+IntegrationMemberDB --> IntegrationServer : 처리 결과 반환
+
+alt 등록/업데이트 성공
+    ' 4-1. 통합회원 정보가 정상적으로 등록/업데이트된 경우
+    IntegrationServer -> IWS : 회원통합 등록 성공
+    IWS -> User : 회원통합 등록 성공
+else 등록/업데이트 실패
+    ' 4-2. 오류 등으로 등록/업데이트 실패 시
+    IntegrationServer -> IWS : 회원통합 등록 실패(오류 메시지)
+    IWS -> User : 회원통합 등록 실패(오류 메시지)
+end
+@enduml 

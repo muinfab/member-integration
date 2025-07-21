@@ -1,0 +1,42 @@
+@startuml
+' 리워즈 회원 로그인 시나리오 상세 시퀀스 다이어그램
+' IWS는 웹 페이지(프론트엔드)임
+
+actor "사용자" as User
+participant "웹 페이지(IWS, 프론트엔드)" as IWS
+participant "통합회원 서버" as IntegrationServer
+database "통합회원 DB" as IntegrationMemberDB
+database "리워즈 회원 DB" as RewardsMemberDB
+
+' 1. 사용자가 웹 페이지(IWS)에서 리워즈 회원 아이디로 로그인 요청
+User -> IWS : 로그인 요청(리워즈 아이디, 비밀번호)
+
+' 2. 웹 페이지(IWS)가 통합회원 서버에 로그인 요청 전달
+IWS -> IntegrationServer : 로그인 요청(리워즈 아이디, 비밀번호)
+
+' 3. 통합회원 서버가 통합회원 DB에서 회원 정보 조회
+IntegrationServer -> IntegrationMemberDB : 회원 정보 조회(리워즈 아이디)
+IntegrationMemberDB --> IntegrationServer : 회원 정보 반환
+
+alt 통합회원 DB에 정보 있음
+    ' 4-1. 통합회원 DB에 정보가 있으면 바로 로그인 성공
+    IntegrationServer -> IWS : 로그인 성공, 회원 유형=리워즈 회원(R)
+    IWS -> User : 로그인 성공, 회원 유형=리워즈 회원(R)
+else 통합회원 DB에 정보 없음
+    ' 4-2. 통합회원 DB에 정보가 없으면 리워즈 회원 DB에서 조회
+    IntegrationServer -> RewardsMemberDB : 회원 정보 조회(리워즈 아이디)
+    RewardsMemberDB --> IntegrationServer : 회원 정보 반환
+
+    alt 리워즈 회원 DB에 정보 있음
+        ' 5-1. 리워즈 회원 DB에 정보가 있으면 통합회원 DB에 추가 후 로그인 성공
+        IntegrationServer -> IntegrationMemberDB : 회원 정보 추가
+        IntegrationMemberDB --> IntegrationServer : 추가 완료
+        IntegrationServer -> IWS : 로그인 성공, 회원 유형=리워즈 회원(R)
+        IWS -> User : 로그인 성공, 회원 유형=리워즈 회원(R)
+    else 리워즈 회원 DB에 정보 없음
+        ' 5-2. 리워즈 회원 DB에도 정보가 없으면 로그인 실패
+        IntegrationServer -> IWS : 로그인 실패(존재하지 않는 아이디)
+        IWS -> User : 로그인 실패(존재하지 않는 아이디)
+    end
+end
+@enduml 
